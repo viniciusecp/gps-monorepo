@@ -12,7 +12,7 @@ export async function getCoordinates(
 		return reply.status(400).send({ error: parse.error.flatten().fieldErrors });
 	}
 
-	const gpsService = request.server.gpsService as GpsService;
+	const gpsService = request.server.gpsService;
 	const result = await gpsService.getLastCoordinates(parse.data.imei);
 	return reply.send(result);
 }

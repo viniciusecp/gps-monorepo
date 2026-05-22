@@ -24,7 +24,7 @@ export async function login(
 	);
 	const refreshToken = await reply.jwtSign(
 		{ id: user.id },
-		{ expiresIn: "7d" },
+		{ expiresIn: "365d" },
 	);
 
 	return reply.send({

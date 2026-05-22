@@ -10,7 +10,7 @@ export function convertCoordinates(
 ) {
 	const dadosFinais: {
 		coordinates: Array<{
-			date: string;
+			date: Date;
 			latitudeDecimalDegrees: number;
 			longitudeDecimalDegrees: number;
 			speed: number;
@@ -18,44 +18,36 @@ export function convertCoordinates(
 	} = { coordinates: [] };
 
 	for (const data of dados) {
-		let { date, latitudeDecimalDegrees, longitudeDecimalDegrees, speed } = data;
+		let { date, latitudeDecimalDegrees: latDegStr, longitudeDecimalDegrees: lonDegStr, speed } = data;
 
-		// UTC-6 fix
-		date = new Date(date.getTime() - 360 * 60000);
 
-		// latitude
-		if (latitudeDecimalDegrees.length === 9) {
-			latitudeDecimalDegrees = `0${latitudeDecimalDegrees}`;
-		}
-		let g = parseFloat(latitudeDecimalDegrees.substring(0, 3));
-		let d = parseFloat(latitudeDecimalDegrees.substring(3));
-		latitudeDecimalDegrees = (g + d / 60).toString();
+		// latitude: always prepend "0"
+		const latStr = "0" + latDegStr;
+		let g = parseFloat(latStr.substring(0, 3));
+		let d = parseFloat(latStr.substring(3));
+		let latitudeDecimalDegrees = g + d / 60;
 		if (data.latitudeHemisphere === "S") {
-			latitudeDecimalDegrees = (
-				parseFloat(latitudeDecimalDegrees) * -1
-			).toString();
+			latitudeDecimalDegrees = latitudeDecimalDegrees * -1;
 		}
 
-		// longitude
-		if (longitudeDecimalDegrees.length === 9) {
-			longitudeDecimalDegrees = `0${longitudeDecimalDegrees}`;
+		// longitude: prepend "0" only if length is 9
+		let lonStr = lonDegStr;
+		if (lonStr.length === 9) {
+			lonStr = "0" + lonStr;
 		}
-		g = parseFloat(longitudeDecimalDegrees.substring(0, 3));
-		d = parseFloat(longitudeDecimalDegrees.substring(3));
-		longitudeDecimalDegrees = (g + d / 60).toString();
-		if (data.longitudeHemisphere === "W") {
-			longitudeDecimalDegrees = (
-				parseFloat(longitudeDecimalDegrees) * -1
-			).toString();
+		g = parseFloat(lonStr.substring(0, 3));
+		d = parseFloat(lonStr.substring(3));
+		let longitudeDecimalDegrees = g + d / 60;
+		if (data.latitudeHemisphere === "S") {
+			longitudeDecimalDegrees = longitudeDecimalDegrees * -1;
 		}
 
-		// speed: km/h to mph
 		speed = speed * 1.60934;
 
 		dadosFinais.coordinates.push({
-			date: date.toISOString(),
-			latitudeDecimalDegrees: parseFloat(latitudeDecimalDegrees),
-			longitudeDecimalDegrees: parseFloat(longitudeDecimalDegrees),
+			date,
+			latitudeDecimalDegrees,
+			longitudeDecimalDegrees,
 			speed,
 		});
 	}
