@@ -1,11 +1,17 @@
 {
-	"version": 1,
-	"skills": {
-		"nodejs-backend-patterns": {
-			"source": "wshobson/agents",
-			"sourceType": "github",
-			"skillPath": "plugins/javascript-typescript/skills/nodejs-backend-patterns/SKILL.md",
-			"computedHash": "c6a99966c2565acc388e574039127abc770bb9a3338be761e421e16f023f702b"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "expo-react-native-javascript-best-practices": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "expo-react-native-javascript-best-practices/SKILL.md",
+      "computedHash": "d07d599c8a2cee4c0b9c22f41118671cf21ab75be2522afeb4f1d32161e773e2"
+    },
+    "nodejs-backend-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/javascript-typescript/skills/nodejs-backend-patterns/SKILL.md",
+      "computedHash": "c6a99966c2565acc388e574039127abc770bb9a3338be761e421e16f023f702b"
+    }
+  }
 }
