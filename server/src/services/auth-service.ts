@@ -13,7 +13,7 @@ export class AuthService {
 	 */
 	async authenticateUser(email: string, senha: string): Promise<Cliente | null> {
 		const senhaMd5 = createHash("md5").update(senha).digest("hex");
-		const db = await getDb();
+		const db = getDb();
 		const users = await db
 			.select()
 			.from(cliente)

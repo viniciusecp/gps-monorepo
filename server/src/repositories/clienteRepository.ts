@@ -7,7 +7,7 @@ export class ClienteRepository {
 	 * Find a cliente by email.
 	 */
 	async findByEmail(email: string): Promise<Cliente | undefined> {
-		const db = await getDb();
+		const db = getDb();
 		const result = await db
 			.select()
 			.from(cliente)
@@ -20,7 +20,7 @@ export class ClienteRepository {
 	 * Find a cliente by id.
 	 */
 	async findById(id: number): Promise<Cliente | undefined> {
-		const db = await getDb();
+		const db = getDb();
 		const result = await db
 			.select()
 			.from(cliente)

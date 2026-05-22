@@ -5,7 +5,7 @@ import { eq, and, desc, gte, lte } from "drizzle-orm";
 export class GprmcRepository {
 	/** Get the last N coordinates for a given IMEI */
 	async getLastCoordinates(imei: string, limit = 10): Promise<Gprmc[]> {
-		const db = await getDb();
+		const db = getDb();
 		return db
 			.select()
 			.from(gprmc)
@@ -16,7 +16,7 @@ export class GprmcRepository {
 
 	/** Get history within a date range for a given IMEI */
 	async getHistory(imei: string, start: Date, end: Date): Promise<Gprmc[]> {
-		const db = await getDb();
+		const db = getDb();
 		return db
 			.select()
 			.from(gprmc)

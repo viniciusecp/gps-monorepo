@@ -7,7 +7,7 @@ export class BemRepository {
 	 * Find vehicles by cliente ID.
 	 */
 	async findByClienteId(clienteId: number): Promise<Bem[]> {
-		const db = await getDb();
+		const db = getDb();
 		return db.select().from(bem).where(eq(bem.cliente, clienteId));
 	}
 }

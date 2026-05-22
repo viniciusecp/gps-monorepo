@@ -20,7 +20,7 @@ export class GpsService {
 	 * Get the last N coordinates for a given IMEI.
 	 */
 	async getLastCoordinates(imei: string, limit = 10) {
-		const db = await getDb();
+		const db = getDb();
 		const rawData = await db
 			.select()
 			.from(gprmc)
@@ -43,7 +43,7 @@ export class GpsService {
 		const start = new Date(`${dataInicio}T${horaInicio}`);
 		const end = new Date(`${dataFinal}T${horaFinal}`);
 
-		const db = await getDb();
+		const db = getDb();
 		const rawData = await db
 			.select()
 			.from(gprmc)
