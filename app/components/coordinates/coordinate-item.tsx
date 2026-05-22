@@ -1,14 +1,7 @@
+import { Coordinate } from "@/common/model";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-export interface Coordinate {
-  latitude: number;
-  longitude: number;
-  date: string;
-  time: string;
-  speed: number;
-}
 
 interface Props {
   coordinate: Coordinate;

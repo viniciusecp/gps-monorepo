@@ -5,6 +5,7 @@ export async function authenticate(
 	reply: FastifyReply,
 ) {
 	try {
+		console.log('request', request.headers.authorization)
 		await request.jwtVerify();
 	} catch (_err) {
 		return reply.status(401).send({ error: "Token inválido ou expirado" });

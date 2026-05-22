@@ -20,11 +20,11 @@ export async function login(
 
 	const token = await reply.jwtSign(
 		{ id: user.id, email: user.email },
-		{ expiresIn: "15m" },
+		{ expiresIn: 5 },
 	);
 	const refreshToken = await reply.jwtSign(
 		{ id: user.id },
-		{ expiresIn: "365d" },
+		{ expiresIn: 5 },
 	);
 
 	return reply.send({
@@ -49,7 +49,7 @@ export async function refreshToken(
 		);
 		const newToken = await reply.jwtSign(
 			{ id: decoded.id },
-			{ expiresIn: "15m" },
+			{ expiresIn: 5 },
 		);
 		return reply.send({ token: newToken });
 	} catch {

@@ -1,11 +1,13 @@
 import { User } from "@/common/model";
 import BackButton from "@/components/back-button";
+import ErrorPopup from "@/components/error-popup";
 import { SubmitButton } from "@/components/submit-button";
+import { ApiError } from "@/src/services/api";
+import { fetchVehicles, login } from "@/src/services/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -21,11 +23,28 @@ export default function AddAccount() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasUsers, setHasUsers] = useState(false);
+  const [errorPopup, setErrorPopup] = useState({ visible: false, title: "", message: "" });
+
+  useEffect(() => {
+    AsyncStorage.getItem("users").then((storageUsers) => {
+      if (storageUsers) {
+        setHasUsers(JSON.parse(storageUsers).length > 0);
+      }
+    });
+  }, []);
+
+  function showError(title: string, message: string) {
+    setErrorPopup({ visible: true, title, message });
+  }
+
+  function hideError() {
+    setErrorPopup({ visible: false, title: "", message: "" });
+  }
 
   async function handleLogin() {
     if (!email || !password) {
-      Alert.alert("Atenção", "Preencha todos os campos!");
-
+      showError("Atenção", "Preencha todos os campos!");
       return;
     }
 
@@ -37,57 +56,43 @@ export default function AddAccount() {
     }
 
     const userAlreadyExists = users.find(
-      (user) => email === user.email && password === user.password
+      (user) => email === user.email
     );
 
     if (userAlreadyExists) {
-      Alert.alert("Atenção", "Usuário já adicionado!");
+      showError("Atenção", "Usuário já adicionado!");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/authentication`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            senha: password,
-          }),
-        }
-      );
+      const data = await login(email, password);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.Erro) {
-        Alert.alert(data.Erro);
-        return;
-      }
+      const vehicles = await fetchVehicles(data.token);
 
       users.push({
-        name: data.nome,
-        email,
-        password,
-        vehicles: data.veiculos.map((veiculo: any) => ({
-          imei: veiculo.imei,
-          name: veiculo.veiculo,
-        })),
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.nome,
+        accessToken: data.token,
+        refreshToken: data.refreshToken,
+        vehicles,
       });
 
       await AsyncStorage.setItem("users", JSON.stringify(users));
 
-      router.push("/");
+      router.replace("/");
     } catch (error) {
-      Alert.alert("Error:", String(error));
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          showError("Erro", "Credenciais inválidas");
+        } else {
+          showError("Erro", `Erro ao conectar com o servidor (${error.status})`);
+        }
+      } else {
+        showError("Erro", "Não foi possível conectar ao servidor");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +107,7 @@ export default function AddAccount() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <BackButton />
+        {hasUsers && <BackButton />}
 
         <View
           style={{
@@ -162,6 +167,13 @@ export default function AddAccount() {
           </View>
         </View>
       </ScrollView>
+
+      <ErrorPopup
+        visible={errorPopup.visible}
+        title={errorPopup.title}
+        message={errorPopup.message}
+        onClose={hideError}
+      />
     </KeyboardAvoidingView>
   );
 }
