@@ -5,6 +5,8 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../src/theme/colors";
+import { ErrorPopupProvider } from "../src/context/ErrorPopupContext";
+import ErrorPopup from "../components/error-popup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 dayjs.extend(utc);
@@ -29,8 +31,9 @@ export default function RootLayout() {
   }, [router, segments]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
-      <Stack
+    <ErrorPopupProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+        <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: {
@@ -43,6 +46,8 @@ export default function RootLayout() {
           options={{ gestureEnabled: false }}
         />
       </Stack>
+      <ErrorPopup />
     </SafeAreaView>
+    </ErrorPopupProvider>
   );
 }

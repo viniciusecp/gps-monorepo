@@ -2,9 +2,9 @@ import { User } from "@/common/model";
 import Accounts from "@/components/accounts";
 import { Coordinates } from "@/components/coordinates";
 import EmptyState from "@/components/empty-state";
-import ErrorPopup from "@/components/error-popup";
-import { HistoryFloatButton } from "@/components/history-float-button";
+import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { refreshAccessToken } from "@/src/services/api";
+import { getSpacing } from "@/src/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -14,8 +14,8 @@ export default function Index() {
   const router = useRouter();
   const [selectedImei, setSelectedImei] = useState("");
   const [users, setUsers] = useState<User[]>([]);
-  const [errorPopup, setErrorPopup] = useState({ visible: false, title: "", message: "" });
   const [expiredUserEmail, setExpiredUserEmail] = useState("");
+  const { showError, setOnClose } = useErrorPopup();
 
   const loadUsers = useCallback(async () => {
     const storageUsers = await AsyncStorage.getItem("users");
@@ -48,28 +48,20 @@ export default function Index() {
     showError("Sessão expirada", "Sua sessão expirou. Faça login novamente.");
   }
 
-  function showError(title: string, message: string) {
-    setErrorPopup({ visible: true, title, message });
-  }
+  useEffect(() => {
+    setOnClose(async () => {
+      if (expiredUserEmail) {
+        const newUsers = users.filter((user) => user.email !== expiredUserEmail);
+        await AsyncStorage.setItem("users", JSON.stringify(newUsers));
+        setUsers(newUsers);
+        setExpiredUserEmail("");
 
-  function hideError() {
-    setErrorPopup({ visible: false, title: "", message: "" });
-  }
-
-  async function handleErrorPopupClose() {
-    hideError();
-
-    if (expiredUserEmail) {
-      const newUsers = users.filter((user) => user.email !== expiredUserEmail);
-      await AsyncStorage.setItem("users", JSON.stringify(newUsers));
-      setUsers(newUsers);
-      setExpiredUserEmail("");
-
-      if (newUsers.length === 0) {
-        router.replace("/add-account");
+        if (newUsers.length === 0) {
+          router.replace("/add-account");
+        }
       }
-    }
-  }
+    });
+  }, [expiredUserEmail, users, router, setOnClose]);
 
   function onVehicleClick(vehicleImei: string) {
     setSelectedImei(vehicleImei);
@@ -85,12 +77,7 @@ export default function Index() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        padding: 8,
-      }}
-    >
+    <View style={{ flex: 1, padding: getSpacing("px2") }}>
       <Accounts
         users={users}
         onVehicleClick={onVehicleClick}
@@ -106,15 +93,6 @@ export default function Index() {
           onTokenExpired={handleTokenExpired}
         />
       )}
-
-      {selectedImei && <HistoryFloatButton selectedImei={selectedImei} />}
-
-      <ErrorPopup
-        visible={errorPopup.visible}
-        title={errorPopup.title}
-        message={errorPopup.message}
-        onClose={handleErrorPopupClose}
-      />
     </View>
   );
 }

@@ -1,9 +1,10 @@
 import { Coordinate, User } from "@/common/model";
-import ErrorPopup from "../error-popup";
+import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { ApiError, tryAuthRequest } from "@/src/services/api";
+import { Colors, getSpacing } from "@/src/theme";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import CoordinateItem from "./coordinate-item";
 
 interface Props {
@@ -15,15 +16,14 @@ interface Props {
 export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
   const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorPopup, setErrorPopup] = useState<{
-    visible: boolean;
-    title: string;
-    message: string;
-  }>({ visible: false, title: "", message: "" });
+  const { showError } = useErrorPopup();
 
-  const showError = (title: string, message: string) => {
-    setErrorPopup({ visible: true, title, message });
-  };
+  const renderCoordinateItem = useCallback(({ item }: { item: Coordinate }) => (
+    <CoordinateItem coordinate={item} />
+  ), []);
+
+  const keyExtractor = useCallback((item: Coordinate) =>
+    `${item.latitude}-${item.longitude}-${item.time}`, []);
 
   const loadCoordinates = useCallback(async () => {
     setIsLoading(true);
@@ -76,7 +76,7 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
     } finally {
       setIsLoading(false);
     }
-  }, [users, selectedImei, onTokenExpired]);
+  }, [users, selectedImei, onTokenExpired, showError]);
 
   useEffect(() => {
     loadCoordinates();
@@ -84,38 +84,35 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
 
   if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#1447e6" />
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
 
   return (
-    <>
-      <FlatList
-        data={coordinates}
-        renderItem={({ item }) => <CoordinateItem coordinate={item} />}
-        showsVerticalScrollIndicator={false}
-        style={{
-          marginTop: 16,
-        }}
-      />
-      <ErrorPopup
-        visible={errorPopup.visible}
-        title={errorPopup.title}
-        message={errorPopup.message}
-        onClose={() => setErrorPopup((prev) => ({ ...prev, visible: false }))}
-      />
-    </>
+    <FlatList
+      data={coordinates}
+      renderItem={renderCoordinateItem}
+      keyExtractor={keyExtractor}
+      showsVerticalScrollIndicator={false}
+      style={styles.list}
+      removeClippedSubviews
+      maxToRenderPerBatch={10}
+      windowSize={5}
+    />
   );
 }
 
-Coordinates.displayName = "Coordinates";
-
 export default Coordinates;
+
+const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  list: {
+    marginTop: getSpacing("px4"),
+  },
+});

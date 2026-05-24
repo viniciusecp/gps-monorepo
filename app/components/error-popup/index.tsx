@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Modal,
@@ -7,16 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Colors, getSpacing, getTypography } from "../../src/theme";
+import { useErrorPopup } from "../../src/context/ErrorPopupContext";
 
-interface Props {
-  visible: boolean;
-  title: string;
-  message: string;
-  onClose: () => void;
-}
-
-export default function ErrorPopup({ visible, title, message, onClose }: Props) {
+function ErrorPopup() {
+  const { errorPopup, hideError } = useErrorPopup();
   const scale = useRef(new Animated.Value(0)).current;
+  const { visible, title, message } = errorPopup;
 
   useEffect(() => {
     if (visible) {
@@ -32,7 +29,7 @@ export default function ErrorPopup({ visible, title, message, onClose }: Props) 
   }, [visible, scale]);
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={hideError}>
       <View style={styles.overlay}>
         <Animated.View
           style={[
@@ -42,7 +39,7 @@ export default function ErrorPopup({ visible, title, message, onClose }: Props) 
         >
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
-          <TouchableOpacity style={styles.button} onPress={onClose}>
+          <TouchableOpacity style={styles.button} onPress={hideError}>
             <Text style={styles.buttonText}>OK</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -51,45 +48,47 @@ export default function ErrorPopup({ visible, title, message, onClose }: Props) 
   );
 }
 
+export default React.memo(ErrorPopup);
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: Colors.overlay,
     justifyContent: "center",
     alignItems: "center",
   },
   popup: {
-    backgroundColor: "#1a1a2e",
+    backgroundColor: Colors.backgroundDark,
     borderWidth: 1,
-    borderColor: "#ffffff26",
+    borderColor: Colors.border,
     borderRadius: 12,
-    padding: 24,
-    marginHorizontal: 32,
+    padding: getSpacing("px6"),
+    marginHorizontal: getSpacing("px5"),
     width: "80%",
     alignItems: "center",
   },
   title: {
-    color: "#fafafa",
-    fontSize: 20,
+    color: Colors.text,
+    fontSize: getTypography("h3"),
     fontWeight: "bold",
-    marginBottom: 12,
+    marginBottom: getSpacing("px3"),
   },
   message: {
-    color: "#cccccc",
-    fontSize: 16,
+    color: Colors.textSecondary,
+    fontSize: getTypography("body"),
     textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 22,
+    marginBottom: getSpacing("px6"),
+    lineHeight: getTypography("body") * 1.5,
   },
   button: {
-    backgroundColor: "#1447e6",
-    paddingVertical: 10,
-    paddingHorizontal: 40,
+    backgroundColor: Colors.primary,
+    paddingVertical: getSpacing("px2"),
+    paddingHorizontal: getSpacing("px8"),
     borderRadius: 8,
   },
   buttonText: {
-    color: "#fafafa",
-    fontSize: 16,
+    color: Colors.text,
+    fontSize: getTypography("button"),
     fontWeight: "bold",
   },
 });

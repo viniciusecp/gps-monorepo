@@ -1,9 +1,10 @@
 import { User } from "@/common/model";
 import BackButton from "@/components/back-button";
-import ErrorPopup from "@/components/error-popup";
-import { SubmitButton } from "@/components/submit-button";
+import SubmitButton from "@/components/submit-button";
+import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { ApiError } from "@/src/services/api";
 import { fetchVehicles, login } from "@/src/services/auth";
+import { Colors, getSpacing, getTypography } from "@/src/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -24,7 +25,7 @@ export default function AddAccount() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasUsers, setHasUsers] = useState(false);
-  const [errorPopup, setErrorPopup] = useState({ visible: false, title: "", message: "" });
+  const { showError } = useErrorPopup();
 
   useEffect(() => {
     AsyncStorage.getItem("users").then((storageUsers) => {
@@ -34,14 +35,7 @@ export default function AddAccount() {
     });
   }, []);
 
-  function showError(title: string, message: string) {
-    setErrorPopup({ visible: true, title, message });
-  }
-
-  function hideError() {
-    setErrorPopup({ visible: false, title: "", message: "" });
-  }
-
+  
   async function handleLogin() {
     if (!email || !password) {
       showError("Atenção", "Preencha todos os campos!");
@@ -100,42 +94,18 @@ export default function AddAccount() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={styles.keyboardView}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         {hasUsers && <BackButton />}
 
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            paddingHorizontal: 16,
-          }}
-        >
-          <View
-            style={{
-              borderWidth: 1,
-              borderColor: "#ffffff1a",
-              borderRadius: 8,
-              paddingHorizontal: 12,
-              paddingVertical: 24,
-            }}
-          >
-            <Text
-              style={{
-                color: "#fafafa",
-                fontSize: 32,
-                fontWeight: "bold",
-                alignSelf: "center",
-                marginBottom: 32,
-              }}
-            >
-              RastroApp
-            </Text>
+        <View style={styles.formContainer}>
+          <View style={styles.card}>
+            <Text style={styles.title}>RastroApp</Text>
 
             <TextInput
               onChangeText={setEmail}
@@ -167,27 +137,46 @@ export default function AddAccount() {
           </View>
         </View>
       </ScrollView>
-
-      <ErrorPopup
-        visible={errorPopup.visible}
-        title={errorPopup.title}
-        message={errorPopup.message}
-        onClose={hideError}
-      />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: "#ffffff0b",
+  keyboardView: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: getSpacing("px4"),
+  },
+  card: {
     borderWidth: 1,
-    borderColor: "#ffffff26",
+    borderColor: Colors.borderLight,
     borderRadius: 8,
-    paddingVertical: 18,
-    paddingHorizontal: 12,
-    color: "#fafafa",
-    marginBottom: 12,
-    fontSize: 18,
+    paddingHorizontal: getSpacing("px3"),
+    paddingVertical: getSpacing("px6"),
+  },
+  title: {
+    color: Colors.text,
+    fontSize: getTypography("h1"),
+    fontWeight: "bold",
+    alignSelf: "center",
+    marginBottom: getSpacing("px8"),
+  },
+  input: {
+    backgroundColor: Colors.backgroundLight,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    paddingVertical: getSpacing("px5"),
+    paddingHorizontal: getSpacing("px3"),
+    color: Colors.text,
+    marginBottom: getSpacing("px3"),
+    fontSize: getTypography("body"),
   },
 });

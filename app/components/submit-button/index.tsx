@@ -1,10 +1,12 @@
 import {
   ActivityIndicator,
+  StyleSheet,
   Text,
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
 import { Colors, getSpacing, getTypography } from "../../src/theme";
+import React from "react";
 
 interface Props {
   label: string;
@@ -13,7 +15,7 @@ interface Props {
   containerStyle?: ViewStyle;
 }
 
-export function SubmitButton({
+function SubmitButton({
   label,
   onClick,
   loading,
@@ -21,28 +23,31 @@ export function SubmitButton({
 }: Props) {
   return (
     <TouchableOpacity
-      style={{
-        backgroundColor: Colors.primary,
-        alignItems: "center",
-        paddingVertical: getSpacing('px3'),
-        borderRadius: 8,
-        ...containerStyle,
-      }}
+      style={[styles.button, containerStyle]}
       disabled={loading}
       onPress={onClick}
     >
       {loading ? (
         <ActivityIndicator color={Colors.text} />
       ) : (
-        <Text
-          style={{
-            color: Colors.text,
-            fontSize: getTypography('button'),
-            fontWeight: getTypography('fontWeight').bold
-          }}>
-          {label}
-        </Text>
+        <Text style={styles.text}>{label}</Text>
       )}
     </TouchableOpacity>
   );
 }
+
+export default React.memo(SubmitButton);
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: Colors.primary,
+    alignItems: "center",
+    paddingVertical: getSpacing("px3"),
+    borderRadius: 8,
+  },
+  text: {
+    color: Colors.text,
+    fontSize: getTypography("button"),
+    fontWeight: "bold",
+  },
+});

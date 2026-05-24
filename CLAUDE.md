@@ -27,15 +27,15 @@ gps-monorepo/
         schema.ts               # Tables: cliente, bem, gprmc (Drizzle ORM definitions)
       routes/
         auth.ts                 # Auth routes: /api/cliente/login, /api/cliente/refresh
-        coordinates.ts          # GPS routes: /api/gprmc/coordinates/:imei, /api/gprmc/history/:imei
+        coordinates.ts          # GPS routes: /api/gprmc/coordinates/:imei
         vehicles.ts             # Vehicle routes: /api/bem/vehicles (auth required)
       controllers/
         auth-controller.ts     # Login (JWT access + refresh)
-        gps-controller.ts      # Get last coordinates, get history by date range (gprmc entity)
+        gps-controller.ts      # Get last coordinates (gprmc entity)
         vehicle-controller.ts  # Get user vehicles (bem entity)
       services/
         auth-service.ts         # Cliente operations: authenticate
-        gps-service.ts         # Gprmc operations: query coordinates, history
+        gps-service.ts         # Gprmc operations: query coordinates
         bem-service.ts         # Bem operations: get vehicles by cliente ID
       repositories/
         cliente-repository.ts  # Cliente DB queries
@@ -45,7 +45,7 @@ gps-monorepo/
         coordinates.ts         # Convert GPRS (DDMM.MMMM) to decimal degrees
       validators/
         schemas.ts             # Zod schemas: login, refresh
-        coordinates.ts         # Zod schemas: getCoordinates, getHistory
+        coordinates.ts         # Zod schemas: getCoordinates
       middleware/
         auth.ts                # authenticate decorator: JWT verification
         errorHandler.ts        # Global error handler
@@ -123,7 +123,6 @@ All routes prefixed with `/api`:
 | POST | `/cliente/login` | No | cliente | Login with email/apelido + senha, returns user + access/refresh tokens |
 | POST | `/cliente/refresh` | No | cliente | Refresh access token using refresh token |
 | GET | `/gprmc/coordinates/:imei` | Yes | gprmc | Last 10 GPS coordinates for a vehicle |
-| GET | `/gprmc/history/:imei` | Yes | gprmc | Historical GPS data by date range |
 | GET | `/bem/vehicles` | Yes | bem | List vehicles for authenticated user |
 
 ## Key Implementation Details

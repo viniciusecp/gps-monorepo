@@ -32,8 +32,7 @@ Todas as rotas têm prefixo `/api`:
 |--------|---------|------|-----------|
 | POST | `/login` | Não | Login com email/apelido + senha, retorna tokens JWT |
 | POST | `/refresh` | Não | Renova access token via refresh token |
-| POST | `/getcoordinates/:imei` | Sim | Últimas 10 coordenadas GPS de um veículo |
-| POST | `/gethistory/:imei` | Sim | Histórico de coordenadas por intervalo de datas |
+| GET | `/gprmc/coordinates/:imei` | Sim | Últimas 10 coordenadas GPS de um veículo |
 
 ## Estrutura do Projeto
 

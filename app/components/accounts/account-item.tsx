@@ -1,6 +1,7 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import { Alert, Text, TouchableOpacity } from "react-native";
-import { Colors, getSpacing, getTypography } from "../../src/theme";
+import { Alert, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Colors, getTypography } from "../../src/theme";
+import React from "react";
 
 interface Props {
   type: "user" | "vehicle" | "add";
@@ -10,7 +11,7 @@ interface Props {
   onRemoveAccount?: () => void;
 }
 
-export default function AccountItem({
+function AccountItem({
   type,
   title,
   isSelected,
@@ -21,8 +22,8 @@ export default function AccountItem({
   const color = isSelected
     ? Colors.primary
     : type === "user"
-    ? Colors.textSecondary
-    : Colors.text;
+      ? Colors.textSecondary
+      : Colors.text;
 
   function handleRemoveUser() {
     if (type !== "user") {
@@ -36,24 +37,32 @@ export default function AccountItem({
       {
         text: "Remover",
         onPress: () => onRemoveAccount?.(),
-        style: "destructive", // iOS specific style
+        style: "destructive",
       },
     ]);
   }
 
   return (
     <TouchableOpacity
-      style={{
-        alignItems: "center",
-        gap: getSpacing('px1'),
-        marginHorizontal: getSpacing('px3'),
-      }}
+      style={styles.container}
       onPress={onClick}
       onLongPress={handleRemoveUser}
     >
-      <FontAwesome6 name={icon} size={getTypography('h3')} color={color} />
-
-      <Text style={{ color, fontSize: getTypography('h3') }}>{title}</Text>
+      <FontAwesome6 name={icon} size={getTypography("h3")} color={color} />
+      <Text style={[styles.text, { color }]}>{title}</Text>
     </TouchableOpacity>
   );
 }
+
+export default React.memo(AccountItem);
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    gap: 4,
+    marginHorizontal: 12,
+  },
+  text: {
+    fontSize: getTypography("h3"),
+  },
+});

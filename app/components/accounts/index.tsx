@@ -1,7 +1,7 @@
 import { User } from "@/common/model";
 import { useRouter } from "expo-router";
 import { Fragment, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import AccountItem from "./account-item";
 import { Colors, getSpacing } from "../../src/theme";
 
@@ -33,15 +33,7 @@ export default function Accounts({
     <ScrollView
       showsHorizontalScrollIndicator={false}
       horizontal
-      style={{
-        flexGrow: 0,
-        flexShrink: 0,
-        backgroundColor: Colors.backgroundLight,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 8,
-        paddingVertical: getSpacing('px2'),
-      }}
+      style={styles.scrollView}
     >
       {users.map((user) => (
         <Fragment key={user.name}>
@@ -67,3 +59,15 @@ export default function Accounts({
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollView: {
+    flexGrow: 0,
+    flexShrink: 0,
+    backgroundColor: Colors.backgroundLight,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    paddingVertical: getSpacing("px2"),
+  },
+});

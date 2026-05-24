@@ -1,6 +1,7 @@
 import BackButton from "@/components/back-button";
+import { Colors, getSpacing } from "@/src/theme";
 import { useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 export default function Map() {
@@ -9,11 +10,11 @@ export default function Map() {
   const lon = Number(longitude);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <BackButton />
 
       <MapView
-        style={{ flex: 1, marginTop: 12 }}
+        style={styles.map}
         initialRegion={{
           latitude: lat,
           longitude: lon,
@@ -32,3 +33,14 @@ export default function Map() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  map: {
+    flex: 1,
+    marginTop: getSpacing("px3"),
+  },
+});

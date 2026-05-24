@@ -1,26 +1,38 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { Colors, getSpacing, getTypography } from "@/src/theme";
 
-export default function BackButton() {
+function BackButton() {
   const router = useRouter();
 
   return (
     <TouchableOpacity
       onPress={() => router.back()}
-      style={{
-        alignSelf: "flex-start",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-        padding: 8,
-        marginTop: 8,
-        marginLeft: 8,
-      }}
+      style={styles.button}
     >
-      <FontAwesome6 name="arrow-left" size={24} color="#fafafa" />
+      <FontAwesome6 name="arrow-left" size={24} color={Colors.text} />
 
-      <Text style={{ color: "#fafafa", fontSize: 20 }}>Voltar</Text>
+      <Text style={styles.text}>Voltar</Text>
     </TouchableOpacity>
   );
 }
+
+export default React.memo(BackButton);
+
+const styles = StyleSheet.create({
+  button: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px3"),
+    padding: getSpacing("px2"),
+    marginTop: getSpacing("px2"),
+    marginLeft: getSpacing("px2"),
+  },
+  text: {
+    color: Colors.text,
+    fontSize: getTypography("h3"),
+  },
+});
