@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
+import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
 
 export default function Index() {
   const router = useRouter();
@@ -81,21 +82,32 @@ export default function Index() {
     <View style={{ flex: 1, padding: getSpacing("px2") }}>
       <Accounts
         users={users}
+        selectedImei={selectedImei}
         onVehicleClick={onVehicleClick}
         onRemoveAccount={onRemoveAccount}
       />
 
       {!selectedImei ? (
-        <EmptyState />
+        <Animated.View
+          key="empty"
+          exiting={FadeOut.duration(200).reduceMotion(ReduceMotion.System)}
+          style={{ flex: 1 }}
+        >
+          <EmptyState />
+        </Animated.View>
       ) : (
-        <>
+        <Animated.View
+          key="content"
+          entering={FadeIn.duration(200).reduceMotion(ReduceMotion.System)}
+          style={{ flex: 1 }}
+        >
           <Coordinates
             users={users}
             selectedImei={selectedImei}
             onTokenExpired={handleTokenExpired}
           />
           <HistoryFloatButton selectedImei={selectedImei} />
-        </>
+        </Animated.View>
       )}
     </View>
   );

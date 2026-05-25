@@ -1,32 +1,27 @@
 import { User } from "@/common/model";
 import { useRouter } from "expo-router";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import AccountItem from "./account-item";
-import { Colors, getSpacing } from "../../src/theme";
+import { Colors, getSpacing } from "@/src/theme";
 
 interface Props {
   users: User[];
+  selectedImei: string;
   onVehicleClick: (imei: string) => void;
   onRemoveAccount: (removeUser: User) => void;
 }
 
 export default function Accounts({
   users,
+  selectedImei,
   onVehicleClick,
   onRemoveAccount,
 }: Props) {
   const router = useRouter();
 
-  const [selectedImei, setSelectedImei] = useState("");
-
   function handleAddAccount() {
     router.push("/add-account");
-  }
-
-  function handleVehicleClick(imei: string) {
-    setSelectedImei(imei);
-    onVehicleClick(imei);
   }
 
   return (
@@ -49,7 +44,7 @@ export default function Accounts({
               type="vehicle"
               title={vehicle.name}
               isSelected={selectedImei === vehicle.imei}
-              onClick={() => handleVehicleClick(vehicle.imei)}
+              onClick={() => onVehicleClick(vehicle.imei)}
             />
           ))}
         </Fragment>

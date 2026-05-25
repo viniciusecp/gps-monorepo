@@ -1,5 +1,6 @@
 import { createPool, type Pool } from "mysql2/promise";
 import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
+import { DefaultLogger } from "drizzle-orm";
 import * as schema from "./schema";
 import { createRetryDb } from "./retry";
 
@@ -24,7 +25,13 @@ export function getPool(): Pool {
 
 export function getDb(): MySql2Database<typeof schema> {
 	if (!db) {
-		db = createRetryDb(drizzle(getPool(), { schema, mode: "default" }));
+		db = createRetryDb(drizzle(getPool(), {
+			schema,
+			mode: "default",
+			logger: process.env.NODE_ENV === "development"
+				? new DefaultLogger()
+				: undefined,
+		}));
 	}
 	return db;
 }

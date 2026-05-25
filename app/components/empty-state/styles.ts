@@ -35,12 +35,5 @@ export const getStyles = () => ({
     fontWeight: getTypography("fontWeight").bold,
     color: Colors.text,
     textAlign: "center" as const,
-    marginBottom: getSpacing("px2"),
-  },
-  subtitle: {
-    fontSize: getTypography("body"),
-    color: Colors.textSecondary,
-    textAlign: "center" as const,
-    lineHeight: getTypography("body") * getTypography("lineHeight").normal,
   },
 });

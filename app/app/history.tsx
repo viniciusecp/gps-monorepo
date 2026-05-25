@@ -1,3 +1,5 @@
+import { Coordinate } from "@/common/model";
+import CoordinateItem from "@/components/coordinates/coordinate-item";
 import BackButton from "@/components/back-button";
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { ApiError, tryAuthRequest } from "@/src/services/api";
@@ -8,7 +10,7 @@ import DateTimePickerModal from "@/components/datetime-picker-modal";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import {
 	ActivityIndicator,
@@ -25,23 +27,14 @@ dayjs.extend(timezone);
 
 type PickerTarget = "startDate" | "startTime" | "endDate" | "endTime";
 
-interface HistoryCoordinate {
-	latitude: number;
-	longitude: number;
-	date: string;
-	time: string;
-	speed: number;
-}
-
 export default function History() {
 	const { imei } = useLocalSearchParams<{ imei: string }>();
-	const router = useRouter();
 	const { showError } = useErrorPopup();
 
 	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState(new Date());
 	const [activePicker, setActivePicker] = useState<PickerTarget | null>(null);
-	const [coordinates, setCoordinates] = useState<HistoryCoordinate[]>([]);
+	const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showMap, setShowMap] = useState(false);
 
@@ -115,37 +108,18 @@ export default function History() {
 		return dayjs(date).format("HH:mm");
 	}
 
-	const keyExtractor = useCallback(
-		(item: HistoryCoordinate, index: number) =>
-			`${item.latitude}-${item.longitude}-${item.time}-${index}`,
+	const renderCoordinateItem = useCallback(
+		({ item, index }: { item: Coordinate; index: number }) => (
+			<CoordinateItem coordinate={item} index={index} />
+		),
 		[],
 	);
 
-	function renderCoordinateItem({ item }: { item: HistoryCoordinate }) {
-		return (
-			<TouchableOpacity
-				onPress={() =>
-					router.push(
-						`/map?latitude=${item.latitude}&longitude=${item.longitude}`,
-					)
-				}
-				style={styles.coordinateRow}
-			>
-				<View style={styles.property}>
-					<FontAwesome6 name="calendar-days" size={24} color={Colors.text} />
-					<Text style={styles.propertyText}>{item.date}</Text>
-				</View>
-				<View style={styles.property}>
-					<FontAwesome6 name="clock" size={24} color={Colors.text} />
-					<Text style={styles.propertyText}>{item.time}</Text>
-				</View>
-				<View style={styles.property}>
-					<FontAwesome6 name="gauge-high" size={24} color={Colors.text} />
-					<Text style={styles.propertyText}>{item.speed} km/h</Text>
-				</View>
-			</TouchableOpacity>
-		);
-	}
+	const keyExtractor = useCallback(
+		(item: Coordinate, index: number) =>
+			`${item.latitude}-${item.longitude}-${item.time}-${index}`,
+		[],
+	);
 
 	if (!imei) {
 		return (
@@ -402,22 +376,5 @@ const styles = StyleSheet.create({
 	},
 	toggleText: { color: Colors.text, fontSize: getTypography("body") },
 	toggleTextActive: { color: Colors.primary, fontWeight: "bold" },
-	coordinateRow: {
-		flexDirection: "row",
-		backgroundColor: Colors.backgroundLight,
-		borderWidth: 1,
-		borderColor: Colors.border,
-		borderRadius: 8,
-		paddingHorizontal: 8,
-		paddingVertical: 12,
-		marginHorizontal: getSpacing("px3"),
-		marginTop: 8,
-	},
-	property: { alignItems: "center", flex: 1, gap: 8 },
-	propertyText: {
-		color: Colors.text,
-		fontSize: 18,
-		lineHeight: 18,
-	},
 	map: { flex: 1, marginHorizontal: getSpacing("px3") },
 });

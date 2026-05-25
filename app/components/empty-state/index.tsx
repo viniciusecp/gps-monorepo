@@ -3,6 +3,7 @@ import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, {
+  ReduceMotion,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -20,30 +21,32 @@ export default function EmptyState() {
   const textOpacity = useSharedValue(0);
 
   useEffect(() => {
+    const options = { reduceMotion: ReduceMotion.System } as const;
+
     pulse.value = withRepeat(
       withSequence(
-        withTiming(1.15, { duration: 1200 }),
-        withTiming(1, { duration: 1200 }),
+        withTiming(1.15, { duration: 1200, ...options }),
+        withTiming(1, { duration: 1200, ...options }),
       ),
       -1,
     );
     pulseOpacity.value = withRepeat(
       withSequence(
-        withTiming(0.7, { duration: 1200 }),
-        withTiming(1, { duration: 1200 }),
+        withTiming(0.7, { duration: 1200, ...options }),
+        withTiming(1, { duration: 1200, ...options }),
       ),
       -1,
     );
     arrowY.value = withRepeat(
       withSequence(
-        withTiming(-8, { duration: 800 }),
-        withTiming(0, { duration: 800 }),
+        withTiming(-8, { duration: 800, ...options }),
+        withTiming(0, { duration: 800, ...options }),
       ),
       -1,
     );
 
     const t = setTimeout(() => {
-      textOpacity.value = withTiming(1, { duration: 800 });
+      textOpacity.value = withTiming(1, { duration: 800, ...options });
     }, 300);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,9 +92,6 @@ export default function EmptyState() {
 
       <Animated.View style={[styles.textContainer, textStyle]}>
         <Animated.Text style={styles.title}>Selecione um veículo</Animated.Text>
-        <Animated.Text style={styles.subtitle}>
-          Selecione um veículo para ver suas ultimas coordenadas
-        </Animated.Text>
       </Animated.View>
     </View>
   );
