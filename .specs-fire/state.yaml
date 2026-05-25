@@ -1,0 +1,40 @@
+project:
+  name: "gps-monorepo"
+  description: "GPS tracking monorepo with Fastify API backend and Expo React Native mobile app"
+  created: "2026-05-24T23:37:32Z"
+  fire_version: "0.1.8"
+
+workspace:
+  type: brownfield
+  structure: monorepo
+  autonomy_bias: balanced
+  parts:
+    - path: server
+      name: gps-api
+      type: backend
+    - path: app
+      name: rastroutions-v2
+      type: mobile
+
+intents:
+  - id: vehicle-history
+    title: "Histórico de Coordenadas por Período"
+    status: in_progress
+    work_items:
+      - id: server-history-endpoint
+        title: "Server - History query endpoint"
+        status: pending
+        complexity: medium
+        mode: confirm
+        depends_on: []
+      - id: app-history-screen
+        title: "App - History screen"
+        status: pending
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - server-history-endpoint
+
+runs:
+  active: []
+  completed: []

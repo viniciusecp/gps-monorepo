@@ -1,0 +1,6 @@
+flow: fire
+version: 0.1.66
+installed_at: '2026-05-24T23:25:03.107Z'
+tools:
+  - claude
+  - opencode
