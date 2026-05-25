@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-25T00:00:00.000Z",
+  "title": "Design System: RastroApp",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "oklch(51% 0.18 265)",
+        "tonalRamp": [
+          "oklch(15% 0.06 265)",
+          "oklch(22% 0.09 265)",
+          "oklch(30% 0.12 265)",
+          "oklch(40% 0.16 265)",
+          "oklch(51% 0.18 265)",
+          "oklch(62% 0.14 265)",
+          "oklch(74% 0.10 265)",
+          "oklch(88% 0.06 265)"
+        ]
+      },
+      "midnight-surface": {
+        "role": "neutral",
+        "displayName": "Midnight Surface",
+        "canonical": "oklch(7% 0.002 265)",
+        "tonalRamp": [
+          "oklch(3% 0.001 265)",
+          "oklch(7% 0.002 265)",
+          "oklch(12% 0.003 265)",
+          "oklch(20% 0.004 265)",
+          "oklch(40% 0.006 265)",
+          "oklch(60% 0.008 265)",
+          "oklch(80% 0.008 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "dark-slate": {
+        "role": "neutral",
+        "displayName": "Dark Slate",
+        "canonical": "oklch(15% 0.004 265)",
+        "tonalRamp": [
+          "oklch(5% 0.002 265)",
+          "oklch(10% 0.003 265)",
+          "oklch(15% 0.004 265)",
+          "oklch(25% 0.005 265)",
+          "oklch(40% 0.006 265)",
+          "oklch(60% 0.008 265)",
+          "oklch(80% 0.008 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "white-smoke": {
+        "role": "neutral",
+        "displayName": "White Smoke",
+        "canonical": "oklch(97% 0.005 265)",
+        "tonalRamp": [
+          "oklch(55% 0.008 265)",
+          "oklch(65% 0.008 265)",
+          "oklch(75% 0.007 265)",
+          "oklch(85% 0.006 265)",
+          "oklch(90% 0.006 265)",
+          "oklch(93% 0.005 265)",
+          "oklch(95% 0.005 265)",
+          "oklch(97% 0.005 265)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Screen titles only — 'RastroApp' on login." },
+      "headline": { "displayName": "Headline", "purpose": "Reserved for future feature-group headers." },
+      "title": { "displayName": "Title", "purpose": "Section headers, error popup titles, vehicle badge labels." },
+      "body": { "displayName": "Body", "purpose": "Primary content — coordinate data, input values, button labels." },
+      "label": { "displayName": "Label", "purpose": "Captions, overline text, supplementary metadata." }
+    },
+    "shadows": [
+      {
+        "name": "modal-elevation",
+        "value": "0 4px 12px rgba(0,0,0,0.38)",
+        "purpose": "Error popup modal shadow — separates the popup from the dark overlay."
+      }
+    ],
+    "motion": [
+      {
+        "name": "spring-standard",
+        "value": "spring(damping: 15, stiffness: 200)",
+        "purpose": "Error popup entrance — scale from 0 to 1 with spring overshoot."
+      },
+      {
+        "name": "pulse-loop",
+        "value": "timing(duration: 1200) loop(infinity, alternate)",
+        "purpose": "Empty state car icon — gentle scale pulse between 1 and 1.15."
+      },
+      {
+        "name": "arrow-float",
+        "value": "timing(duration: 800) loop(infinity, alternate)",
+        "purpose": "Empty state chevron — vertical float between 0 and -8px."
+      },
+      {
+        "name": "fade-in",
+        "value": "timing(duration: 800, delay: 300)",
+        "purpose": "Empty state text — one-time fade-in after 300ms delay."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Full-width action button for 'Acessar', 'Buscar', and 'OK' actions.",
+      "html": "<button class=\"ds-btn-primary\">Acessar</button>",
+      "css": ".ds-btn-primary { background: #1447e6; color: #fafafa; font-size: 22px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; padding: 12px 32px; border: none; border-radius: 8px; width: 100%; text-align: center; cursor: pointer; transition: opacity 0.15s; } .ds-btn-primary:active { opacity: 0.8; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Text input for email/username and password fields on the login screen.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Digite seu email aqui...\">",
+      "css": ".ds-input { background: #1a1a1a; color: #fafafa; font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; padding: 20px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; width: 100%; outline: none; box-sizing: border-box; } .ds-input::placeholder { color: rgba(250,250,250,0.25); } .ds-input:focus { border-color: #1447e6; }"
+    },
+    {
+      "name": "Toggle Button",
+      "kind": "custom",
+      "refersTo": "toggle-button",
+      "description": "List/Map view toggle in the history screen. Active state uses Signal Blue border and text.",
+      "html": "<div style=\"display:flex;gap:8px\"><button class=\"ds-toggle ds-toggle-active\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"#1447e6\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><rect x=\"3\" y=\"10\" width=\"18\" height=\"4\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"18\" height=\"4\" rx=\"1\"/></svg>Lista</button><button class=\"ds-toggle\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"#fafafa\"><path d=\"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z\"/></svg>Mapa</button></div>",
+      "css": ".ds-toggle { display: flex; align-items: center; gap: 4px; background: transparent; color: #fafafa; font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; padding: 4px 16px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; cursor: pointer; } .ds-toggle-active { border-color: #1447e6; color: #1447e6; font-weight: 700; }"
+    },
+    {
+      "name": "Coordinate Row",
+      "kind": "custom",
+      "refersTo": "card-surface",
+      "description": "The primary data display unit — date, time, and speed in a horizontal row. Tappable to open the map.",
+      "html": "<div class=\"ds-coord-row\"><div class=\"ds-coord-prop\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#fafafa\"><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z\"/></svg><span>25/05/2026</span></div><div class=\"ds-coord-prop\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#fafafa\"><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg><span>14:32:15</span></div><div class=\"ds-coord-prop\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#fafafa\"><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg><span>64 km/h</span></div></div>",
+      "css": ".ds-coord-row { display: flex; flex-direction: row; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px 8px; cursor: pointer; } .ds-coord-prop { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; } .ds-coord-prop span { color: #fafafa; font-size: 18px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; line-height: 1; }"
+    },
+    {
+      "name": "Error Popup",
+      "kind": "custom",
+      "refersTo": "error-popup",
+      "description": "Spring-animated modal dialog for all error states. Dark overlay, Pitch Void interior, Signal Blue OK button.",
+      "html": "<div class=\"ds-modal-overlay\"><div class=\"ds-error-popup\"><div class=\"ds-popup-title\">Sessão expirada</div><div class=\"ds-popup-message\">Sua sessão expirou. Faça login novamente.</div><button class=\"ds-popup-button\">OK</button></div></div>",
+      "css": ".ds-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; } .ds-error-popup { background: #050505; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 24px; width: 80%; max-width: 320px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.38); } .ds-popup-title { color: #fafafa; font-size: 24px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; margin-bottom: 12px; } .ds-popup-message { color: rgba(250,250,250,0.5); font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; text-align: center; line-height: 1.5; margin-bottom: 24px; } .ds-popup-button { background: #1447e6; color: #fafafa; font-size: 22px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; padding: 12px 32px; border: none; border-radius: 8px; cursor: pointer; width: 100%; }"
+    },
+    {
+      "name": "Account Badge",
+      "kind": "custom",
+      "refersTo": "card-surface",
+      "description": "Horizontal icon+label badge in the account selector. Selected vehicle badges use Signal Blue; user badges and add-badge are always Mist.",
+      "html": "<div style=\"display:flex;gap:24px;padding:8px;background:#1a1a1a;border:1px solid rgba(255,255,255,0.15);border-radius:8px;overflow-x:auto\"><div class=\"ds-badge\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"rgba(250,250,250,0.5)\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg><span>João</span></div><div class=\"ds-badge ds-badge-active\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#1447e6\"><path d=\"M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z\"/></svg><span>ABC-1234</span></div><div class=\"ds-badge\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"rgba(250,250,250,0.5)\"><path d=\"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z\"/></svg><span>Adicionar</span></div></div>",
+      "css": ".ds-badge { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; } .ds-badge span { color: rgba(250,250,250,0.5); font-size: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; } .ds-badge-active span { color: #1447e6; font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Fleet Console",
+    "overview": "RastroApp is the fleet manager's quiet command post — dark by necessity (outdoor readability, in-vehicle glare reduction), not by fashion. The interface recedes behind the data: vehicle coordinates, speed, time, and route history. Signal Blue appears sparingly as a calm anchor — the accent that says 'this is interactive' without demanding attention.\n\nThis system explicitly rejects the clichés of GPS tracking tools: no glowing neon trackers, no gauge-cluttered dashboards, no fake-3D maps. It also refuses 'hacker terminal' dark mode (neon green on black) and over-gamified UI. The surface is dark, the typography is crisp, the hierarchy is purely data-driven.",
+    "keyCharacteristics": [
+      "Dark-toned layered depth (three background levels), not shadows",
+      "One restrained blue accent (≤10% of any screen)",
+      "System-native typography — no custom fonts, no decorative type",
+      "8px grid spacing throughout",
+      "Data rows as the primary content unit, not cards"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Signal Blue covers ≤10% of any screen. Its rarity is what gives it meaning. If too much of the UI is blue, the accent becomes noise.", "section": "colors" },
+      { "name": "The Dark Intent Rule", "body": "Every neutral is tinted toward blue, even at near-black. Pure grayscale would read as 'unstyled dark mode.' The blue cast is the difference between deliberate and default.", "section": "colors" },
+      { "name": "The Scale Rule", "body": "Hierarchy is communicated purely through weight (bold vs regular) and size (32 → 28 → 24 → 22 → 16 → 14 → 12). The ratio between adjacent steps is ≥1.25 for the top four levels.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Cards, account badges, and coordinate rows sit directly on their background with only a 1px faint-border edge. Depth is a function of lightness, not shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Signal Blue sparingly — buttons, selected states, and the empty-state car icon only.",
+      "Do use tonal layering for depth: Midnight Surface (base), Dark Slate (raised), Pitch Void (deepest).",
+      "Do keep the 8px grid. All spacing, padding, and gaps derive from the px2–px12 scale.",
+      "Do use system fonts. Custom typefaces add download weight and rendering risk with no benefit for a data-first tool.",
+      "Do show coordinates, speed, and time as text — color is never the sole differentiator.",
+      "Do use the error popup for all error states."
+    ],
+    "donts": [
+      "Don't use Signal Blue for backgrounds, borders on non-interactive elements, or body text.",
+      "Don't add drop shadows to cards, account badges, or coordinate rows at rest.",
+      "Don't use gauge clusters, widget walls, or dense dashboard layouts.",
+      "Don't use neon green, purple gradients, or glassmorphism effects.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe.",
+      "Don't use modal as the first thought for new interactions.",
+      "Don't wrap content in a card unless it needs visual grouping.",
+      "Don't add decorative animations beyond the two existing ones (car pulse, error spring)."
+    ]
+  }
+}
