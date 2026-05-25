@@ -1,97 +1,96 @@
-import { Colors, getTypography } from "@/src/theme";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { useEffect } from "react";
-import { View } from "react-native";
+import { Colors } from "@/src/theme";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { View, Text } from "react-native";
+import { getStyles } from "./styles";
 import Animated, {
   ReduceMotion,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withRepeat,
   withSequence,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { getStyles } from "./styles";
+import { useEffect } from "react";
 
 export default function EmptyState() {
   const styles = getStyles();
 
   const pulse = useSharedValue(1);
-  const pulseOpacity = useSharedValue(1);
-  const arrowY = useSharedValue(0);
-  const textOpacity = useSharedValue(0);
+  const iconOpacity = useSharedValue(0);
+  const titleOffset = useSharedValue(12);
+  const titleOpacity = useSharedValue(0);
+  const subtitleOffset = useSharedValue(12);
+  const subtitleOpacity = useSharedValue(0);
 
   useEffect(() => {
-    const options = { reduceMotion: ReduceMotion.System } as const;
+    iconOpacity.value = withTiming(1, { duration: 300, reduceMotion: ReduceMotion.System });
 
-    pulse.value = withRepeat(
-      withSequence(
-        withTiming(1.15, { duration: 1200, ...options }),
-        withTiming(1, { duration: 1200, ...options }),
+    pulse.value = withDelay(
+      400,
+      withRepeat(
+        withSequence(
+          withTiming(1.06, { duration: 1200, reduceMotion: ReduceMotion.System }),
+          withTiming(1, { duration: 1200, reduceMotion: ReduceMotion.System }),
+        ),
+        -1,
+        true,
       ),
-      -1,
-    );
-    pulseOpacity.value = withRepeat(
-      withSequence(
-        withTiming(0.7, { duration: 1200, ...options }),
-        withTiming(1, { duration: 1200, ...options }),
-      ),
-      -1,
-    );
-    arrowY.value = withRepeat(
-      withSequence(
-        withTiming(-8, { duration: 800, ...options }),
-        withTiming(0, { duration: 800, ...options }),
-      ),
-      -1,
     );
 
-    const t = setTimeout(() => {
-      textOpacity.value = withTiming(1, { duration: 800, ...options });
-    }, 300);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    titleOpacity.value = withDelay(
+      500,
+      withTiming(1, { duration: 250, reduceMotion: ReduceMotion.System }),
+    );
+    titleOffset.value = withDelay(
+      500,
+      withSpring(0, { damping: 20, stiffness: 200, reduceMotion: ReduceMotion.System }),
+    );
 
-  const carStyle = useAnimatedStyle(() => ({
+    subtitleOpacity.value = withDelay(
+      700,
+      withTiming(1, { duration: 250, reduceMotion: ReduceMotion.System }),
+    );
+    subtitleOffset.value = withDelay(
+      700,
+      withSpring(0, { damping: 20, stiffness: 200, reduceMotion: ReduceMotion.System }),
+    );
+  }, [iconOpacity, pulse, titleOpacity, titleOffset, subtitleOpacity, subtitleOffset]);
+
+  const iconAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: iconOpacity.value,
     transform: [{ scale: pulse.value }],
-    opacity: pulseOpacity.value,
   }));
 
-  const glowStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulse.value * 1.5 }],
-    opacity: pulseOpacity.value * 0.15,
+  const titleAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: titleOpacity.value,
+    transform: [{ translateY: titleOffset.value }],
   }));
 
-  const arrowStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: arrowY.value }],
-  }));
-
-  const textStyle = useAnimatedStyle(() => ({
-    opacity: textOpacity.value,
+  const subtitleAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: subtitleOpacity.value,
+    transform: [{ translateY: subtitleOffset.value }],
   }));
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Animated.View style={[styles.arrowContainer, arrowStyle]}>
-          <Ionicons
-            name="chevron-up"
-            size={getTypography("h2")}
-            color={Colors.primaryLight}
-          />
-        </Animated.View>
-        <Animated.View style={[styles.glowEffect, glowStyle]} />
-        <Animated.View style={carStyle}>
-          <FontAwesome6
-            name="car"
-            size={getTypography("h1")}
-            color={Colors.primary}
-          />
-        </Animated.View>
-      </View>
+      <Animated.View style={[styles.iconContainer, iconAnimatedStyle]}>
+        <FontAwesome6
+          name="car"
+          size={32}
+          color={Colors.primary}
+        />
+      </Animated.View>
 
-      <Animated.View style={[styles.textContainer, textStyle]}>
-        <Animated.Text style={styles.title}>Selecione um veículo</Animated.Text>
+      <Animated.View style={[styles.textContainer, titleAnimatedStyle]}>
+        <Text style={styles.title}>Nenhum veículo selecionado</Text>
+      </Animated.View>
+
+      <Animated.View style={subtitleAnimatedStyle}>
+        <Text style={styles.subtitle}>
+          Acesse uma conta para visualizar veículos
+        </Text>
       </Animated.View>
     </View>
   );

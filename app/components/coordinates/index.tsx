@@ -7,6 +7,7 @@ import { ActivityIndicator, FlatList, StyleSheet, View, Text } from "react-nativ
 import { Colors, getSpacing, getTypography } from "@/src/theme";
 import CoordinateItem from "./coordinate-item";
 import { FontAwesome6 } from "@expo/vector-icons";
+import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 
 interface Props {
   users: User[];
@@ -105,10 +106,18 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
 
   if (coordinates.length === 0) {
     return (
-      <View style={styles.loader}>
-        <FontAwesome6 name="map-pin" size={getTypography("h1")} color={Colors.textSecondary} />
-        <Text style={styles.emptyText}>Nenhuma coordenada encontrada</Text>
-      </View>
+      <Animated.View
+        entering={FadeIn.duration(400).reduceMotion(ReduceMotion.System)}
+        style={styles.emptyContainer}
+      >
+        <View style={styles.emptyIcon}>
+          <FontAwesome6 name="map-pin" size={48} color={Colors.glassBorder} />
+        </View>
+        <Text style={styles.emptyTitle}>Sem coordenadas</Text>
+        <Text style={styles.emptyText}>
+          O veículo ainda não possui dados de localização
+        </Text>
+      </Animated.View>
     );
   }
 
@@ -122,6 +131,7 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
       removeClippedSubviews
       maxToRenderPerBatch={10}
       windowSize={5}
+      contentContainerStyle={styles.listContent}
     />
   );
 }
@@ -135,11 +145,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: getSpacing("px4"),
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: getSpacing("px4"),
+    paddingHorizontal: getSpacing("px6"),
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.glassBackground,
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyTitle: {
+    fontSize: getTypography("h3"),
+    fontWeight: getTypography("fontWeight").semibold,
+    color: Colors.text,
+  },
   emptyText: {
-    color: Colors.textSecondary,
     fontSize: getTypography("body"),
+    color: Colors.textSecondary,
+    textAlign: "center",
   },
   list: {
-    marginTop: getSpacing("px4"),
+    marginTop: getSpacing("px2"),
+  },
+  listContent: {
+    paddingBottom: getSpacing("px8"),
+    paddingHorizontal: getSpacing("px2"),
   },
 });

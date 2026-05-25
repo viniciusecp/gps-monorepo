@@ -1,5 +1,5 @@
 import { Coordinate } from "@/common/model";
-import { Colors, getSpacing, getTypography } from "@/src/theme";
+import { Colors, getTypography, getSpacing } from "@/src/theme";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -22,12 +22,12 @@ function CoordinateItem({ coordinate, index = 0 }: Props) {
   const router = useRouter();
   const scale = useSharedValue(1);
   const itemOpacity = useSharedValue(0);
-  const itemTranslateY = useSharedValue(-16);
+  const itemTranslateY = useSharedValue(20);
 
   useEffect(() => {
-    const delayMs = index * 80;
-    itemOpacity.value = withDelay(delayMs, withTiming(1, { duration: 200, reduceMotion: ReduceMotion.System }));
-    itemTranslateY.value = withDelay(delayMs, withTiming(0, { duration: 200, reduceMotion: ReduceMotion.System }));
+    const delayMs = index * 60;
+    itemOpacity.value = withDelay(delayMs, withTiming(1, { duration: 250, reduceMotion: ReduceMotion.System }));
+    itemTranslateY.value = withDelay(delayMs, withSpring(0, { damping: 20, stiffness: 200, reduceMotion: ReduceMotion.System }));
   }, [index, itemOpacity, itemTranslateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -36,19 +36,22 @@ function CoordinateItem({ coordinate, index = 0 }: Props) {
   }));
 
   function handlePressIn() {
-    scale.value = withTiming(0.96, {
-      duration: 100,
+    scale.value = withTiming(0.97, {
+      duration: 80,
       reduceMotion: ReduceMotion.System,
     });
   }
 
   function handlePressOut() {
     scale.value = withSpring(1, {
-      damping: 15,
-      stiffness: 200,
+      damping: 20,
+      stiffness: 300,
       reduceMotion: ReduceMotion.System,
     });
   }
+
+  const speedValue = Number(coordinate.speed);
+  const isMoving = speedValue > 0;
 
   return (
     <Animated.View style={animatedStyle}>
@@ -63,24 +66,40 @@ function CoordinateItem({ coordinate, index = 0 }: Props) {
         style={styles.container}
         accessibilityRole="button"
         accessibilityLabel={`${coordinate.date} ${coordinate.time}, ${coordinate.speed} km/h`}
-        accessibilityHint="Abrir no mapa"
       >
-        <View style={styles.property}>
-          <FontAwesome6 name="calendar-days" size={getTypography("h3")} color={Colors.text} />
-
-          <Text style={styles.text} numberOfLines={1}>{coordinate.date}</Text>
+        <View style={styles.header}>
+          <View style={styles.dateTimeContainer}>
+            <FontAwesome6 name="calendar" size={12} color={Colors.textSecondary} />
+            <Text style={styles.dateText}>{coordinate.date}</Text>
+          </View>
+          <View style={styles.timeContainer}>
+            <FontAwesome6 name="clock" size={12} color={Colors.textSecondary} />
+            <Text style={styles.timeText}>{coordinate.time}</Text>
+          </View>
         </View>
 
-        <View style={styles.property}>
-          <FontAwesome6 name="clock" size={getTypography("h3")} color={Colors.text} />
+        <View style={styles.content}>
+          <View style={styles.coordinates}>
+            <View style={styles.coordinateRow}>
+              <FontAwesome6 name="location-arrow" size={14} color={Colors.primary} style={{ transform: [{ rotate: "45deg" }] }} />
+              <Text style={styles.coordinateText} numberOfLines={1}>
+                {Number(coordinate.latitude).toFixed(6)}, {Number(coordinate.longitude).toFixed(6)}
+              </Text>
+            </View>
+          </View>
 
-          <Text style={styles.text} numberOfLines={1}>{coordinate.time}</Text>
-        </View>
-
-        <View style={styles.property}>
-          <FontAwesome6 name="gauge-high" size={getTypography("h3")} color={Colors.text} />
-
-          <Text style={styles.text} numberOfLines={1}>{coordinate.speed} km/h</Text>
+          <View style={styles.speedContainer}>
+            <View style={[styles.speedBadge, isMoving ? styles.speedMoving : styles.speedStopped]}>
+              <FontAwesome6
+                name={isMoving ? "gauge-high" : "gauge"}
+                size={14}
+                color={isMoving ? Colors.success : Colors.textSecondary}
+              />
+              <Text style={[styles.speedText, isMoving ? styles.speedTextActive : styles.speedTextInactive]}>
+                {speedValue} <Text style={styles.speedUnit}>km/h</Text>
+              </Text>
+            </View>
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -91,23 +110,89 @@ export default React.memo(CoordinateItem);
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    backgroundColor: Colors.backgroundLight,
+    backgroundColor: Colors.glassBackground,
+    borderRadius: 16,
+    padding: getSpacing("px3"),
+    marginHorizontal: 4,
+    marginVertical: getSpacing("px1_5"),
     borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: getSpacing("px2"),
-    paddingVertical: getSpacing("px3"),
-    marginTop: getSpacing("px2"),
+    borderColor: Colors.glassBorder,
+    gap: getSpacing("px1_5"),
   },
-  property: {
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    flex: 1,
+  },
+  dateTimeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px1"),
+  },
+  dateText: {
+    fontSize: getTypography("caption"),
+    color: Colors.textSecondary,
+    fontWeight: getTypography("fontWeight").medium,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px1"),
+  },
+  timeText: {
+    fontSize: getTypography("caption"),
+    color: Colors.textSecondary,
+    fontWeight: getTypography("fontWeight").medium,
+  },
+  content: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: getSpacing("px2"),
   },
-  text: {
-    color: Colors.text,
+  coordinates: {
+    flex: 1,
+  },
+  coordinateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px2"),
+  },
+  coordinateText: {
     fontSize: getTypography("body"),
-    lineHeight: getTypography("body") * getTypography("lineHeight").normal,
+    color: Colors.text,
+    flex: 1,
+    letterSpacing: -0.2,
+  },
+  speedContainer: {
+    alignItems: "flex-end",
+  },
+  speedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px1"),
+    paddingHorizontal: getSpacing("px2"),
+    paddingVertical: getSpacing("px0_5"),
+    borderRadius: 20,
+  },
+  speedMoving: {
+    backgroundColor: "rgba(0, 200, 83, 0.2)",
+  },
+  speedStopped: {
+    backgroundColor: Colors.glassBorder,
+  },
+  speedText: {
+    fontSize: getTypography("body"),
+    fontWeight: getTypography("fontWeight").semibold,
+  },
+  speedTextActive: {
+    color: Colors.success,
+  },
+  speedTextInactive: {
+    color: Colors.textSecondary,
+  },
+  speedUnit: {
+    fontSize: getTypography("caption"),
+    fontWeight: getTypography("fontWeight").regular,
   },
 });

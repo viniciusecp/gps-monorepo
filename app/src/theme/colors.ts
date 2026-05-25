@@ -36,6 +36,11 @@ export const Colors = {
   // Shadows and overlays
   shadow: '#00000060',
   overlay: '#00000080',
+
+  // Glass effect colors (for frosted glass)
+  glassBackground: 'rgba(26, 26, 26, 0.8)',
+  glassBorder: 'rgba(255, 255, 255, 0.12)',
+  glassHighlight: 'rgba(255, 255, 255, 0.05)',
 } as const;
 
 export type ColorType = keyof typeof Colors;

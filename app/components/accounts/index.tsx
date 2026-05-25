@@ -1,7 +1,7 @@
 import { User } from "@/common/model";
 import { useRouter } from "expo-router";
 import { Fragment } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import AccountItem from "./account-item";
 import { Colors, getSpacing } from "@/src/theme";
 
@@ -25,44 +25,60 @@ export default function Accounts({
   }
 
   return (
-    <ScrollView
-      showsHorizontalScrollIndicator={false}
-      horizontal
-      style={styles.scrollView}
-    >
-      {users.map((user) => (
-        <Fragment key={user.name}>
-          <AccountItem
-            type="user"
-            title={user.name}
-            onRemoveAccount={() => onRemoveAccount(user)}
-          />
+    <View style={styles.wrapper}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+      >
+        <View style={styles.container}>
+          {users.map((user) => (
+            <Fragment key={user.name}>
+              <AccountItem
+                type="user"
+                title={user.name}
+                onRemoveAccount={() => onRemoveAccount(user)}
+              />
 
-          {user.vehicles.map((vehicle) => (
-            <AccountItem
-              key={vehicle.name}
-              type="vehicle"
-              title={vehicle.name}
-              isSelected={selectedImei === vehicle.imei}
-              onClick={() => onVehicleClick(vehicle.imei)}
-            />
+              {user.vehicles.map((vehicle) => (
+                <AccountItem
+                  key={vehicle.name}
+                  type="vehicle"
+                  title={vehicle.name}
+                  isSelected={selectedImei === vehicle.imei}
+                  onClick={() => onVehicleClick(vehicle.imei)}
+                />
+              ))}
+            </Fragment>
           ))}
-        </Fragment>
-      ))}
 
-      <AccountItem type="add" title="Adicionar" onClick={handleAddAccount} />
-    </ScrollView>
+          <AccountItem type="add" title="Adicionar" onClick={handleAddAccount} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    marginHorizontal: getSpacing("px2"),
+    marginVertical: getSpacing("px1_5"),
+  },
   scrollView: {
     flexGrow: 0,
     flexShrink: 0,
+  },
+  scrollContent: {
+    paddingHorizontal: getSpacing("px2"),
+    paddingVertical: getSpacing("px0_5"),
+    gap: getSpacing("px1"),
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.backgroundLight,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingVertical: getSpacing("px2"),
+    borderRadius: 12,
+    paddingRight: 8,
   },
 });

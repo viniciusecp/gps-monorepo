@@ -5,12 +5,12 @@ import EmptyState from "@/components/empty-state";
 import { HistoryFloatButton } from "@/components/history-float-button";
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { refreshAccessToken } from "@/src/services/api";
-import { getSpacing } from "@/src/theme";
+import { Colors, getSpacing, getTypography } from "@/src/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
-import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 export default function Index() {
   const router = useRouter();
@@ -78,8 +78,25 @@ export default function Index() {
     setUsers(newUsers);
   }
 
+  const selectedVehicle = users
+    .flatMap((u) => u.vehicles)
+    .find((v) => v.imei === selectedImei);
+
   return (
-    <View style={{ flex: 1, padding: getSpacing("px2") }}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        {selectedImei ? (
+          <>
+            <FontAwesome6 name="car" size={20} color={Colors.primary} />
+            <Text style={styles.headerTitle} numberOfLines={1}>
+              {selectedVehicle?.name || "Veículo"}
+            </Text>
+          </>
+        ) : (
+          <Text style={styles.appTitle}>RastroApp</Text>
+        )}
+      </View>
+
       <Accounts
         users={users}
         selectedImei={selectedImei}
@@ -88,27 +105,52 @@ export default function Index() {
       />
 
       {!selectedImei ? (
-        <Animated.View
-          key="empty"
-          exiting={FadeOut.duration(200).reduceMotion(ReduceMotion.System)}
-          style={{ flex: 1 }}
-        >
+        <View style={styles.content}>
           <EmptyState />
-        </Animated.View>
+        </View>
       ) : (
-        <Animated.View
-          key="content"
-          entering={FadeIn.duration(200).reduceMotion(ReduceMotion.System)}
-          style={{ flex: 1 }}
-        >
+        <View style={styles.content}>
           <Coordinates
             users={users}
             selectedImei={selectedImei}
             onTokenExpired={handleTokenExpired}
           />
           <HistoryFloatButton selectedImei={selectedImei} />
-        </Animated.View>
+        </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getSpacing("px2"),
+    paddingHorizontal: getSpacing("px5"),
+    paddingTop: getSpacing("px4"),
+    paddingBottom: getSpacing("px3"),
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
+  },
+  headerTitle: {
+    fontSize: getTypography("h3"),
+    fontWeight: getTypography("fontWeight").bold,
+    color: Colors.text,
+    flex: 1,
+    letterSpacing: -0.3,
+  },
+  appTitle: {
+    fontSize: getTypography("h3"),
+    fontWeight: getTypography("fontWeight").bold,
+    color: Colors.primary,
+    letterSpacing: -0.3,
+  },
+  content: {
+    flex: 1,
+  },
+});

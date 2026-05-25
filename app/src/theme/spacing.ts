@@ -1,12 +1,14 @@
 /**
  * Spacing scale for rastroapp-v2
- * Based on 8px grid system
+ * Based on 4px grid system
  */
 
 export const Spacing = {
-  // Base 8px scale
+  // Base 4px scale
   px0: 0,
+  px0_5: 2, // 2px
   px1: 4,   // 4px
+  px1_5: 6, // 6px
   px2: 8,   // 8px
   px3: 12,  // 12px
   px4: 16,  // 16px
