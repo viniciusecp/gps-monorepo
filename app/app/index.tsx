@@ -2,6 +2,7 @@ import { User } from "@/common/model";
 import Accounts from "@/components/accounts";
 import { Coordinates } from "@/components/coordinates";
 import EmptyState from "@/components/empty-state";
+import { HistoryFloatButton } from "@/components/history-float-button";
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { refreshAccessToken } from "@/src/services/api";
 import { getSpacing } from "@/src/theme";
@@ -87,11 +88,14 @@ export default function Index() {
       {!selectedImei ? (
         <EmptyState />
       ) : (
-        <Coordinates
-          users={users}
-          selectedImei={selectedImei}
-          onTokenExpired={handleTokenExpired}
-        />
+        <>
+          <Coordinates
+            users={users}
+            selectedImei={selectedImei}
+            onTokenExpired={handleTokenExpired}
+          />
+          <HistoryFloatButton selectedImei={selectedImei} />
+        </>
       )}
     </View>
   );

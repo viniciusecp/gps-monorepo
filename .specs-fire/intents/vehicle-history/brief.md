@@ -1,8 +1,9 @@
 ---
 id: vehicle-history
 title: Histórico de Coordenadas por Período
-status: in_progress
+status: completed
 created: 2026-05-24T23:37:32Z
+completed_at: 2026-05-25T00:38:32.200Z
 ---
 
 # Intent: Histórico de Coordenadas por Período

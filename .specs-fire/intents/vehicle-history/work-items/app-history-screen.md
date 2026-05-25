@@ -4,10 +4,12 @@ title: App - History screen
 intent: vehicle-history
 complexity: medium
 mode: confirm
-status: pending
+status: completed
 depends_on:
   - server-history-endpoint
 created: 2026-05-24T23:37:32Z
+run_id: run-gps-monorepo-001
+completed_at: 2026-05-25T00:38:32.195Z
 ---
 
 # Work Item: App - History screen

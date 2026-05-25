@@ -4,7 +4,7 @@
 	"description": "GPS tracking API - Fastify + Drizzle ORM + TypeScript",
 	"main": "src/index.ts",
 	"scripts": {
-		"dev": "tsx watch src/index.ts",
+		"dev": "nodemon --exec tsx src/index.ts",
 		"build": "tsc",
 		"start": "node dist/index.js",
 		"db:generate": "drizzle-kit generate",
@@ -29,6 +29,7 @@
 		"@biomejs/biome": "2.4.14",
 		"@types/node": "^22.15.3",
 		"drizzle-kit": "^0.31.1",
+		"nodemon": "^3.1.14",
 		"tsx": "^4.19.3",
 		"typescript": "^5.8.3"
 	}
