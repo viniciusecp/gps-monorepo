@@ -18,7 +18,7 @@ workspace:
 intents:
   - id: vehicle-history
     title: Histórico de Coordenadas por Período
-    status: in_progress
+    status: completed
     work_items:
       - id: server-history-endpoint
         title: Server - History query endpoint

@@ -4,7 +4,7 @@ import { ApiError, tryAuthRequest } from "@/src/services/api";
 import { Colors, getSpacing, getTypography } from "@/src/theme";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "@/components/datetime-picker-modal";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -13,7 +13,6 @@ import { useCallback, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
-	Platform,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -93,17 +92,20 @@ export default function History() {
 		}
 	}, [imei, startDate, endDate, showError]);
 
-	const handlePickerChange = (_event: any, selectedDate?: Date) => {
-		if (!activePicker || !selectedDate) {
+	const handlePickerConfirm = useCallback(
+		(selectedDate: Date) => {
+			if (activePicker === "startDate") setStartDate(selectedDate);
+			if (activePicker === "startTime") setStartDate(selectedDate);
+			if (activePicker === "endDate") setEndDate(selectedDate);
+			if (activePicker === "endTime") setEndDate(selectedDate);
 			setActivePicker(null);
-			return;
-		}
-		if (activePicker === "startDate") setStartDate(selectedDate);
-		if (activePicker === "startTime") setStartDate(selectedDate);
-		if (activePicker === "endDate") setEndDate(selectedDate);
-		if (activePicker === "endTime") setEndDate(selectedDate);
+		},
+		[activePicker],
+	);
+
+	const handlePickerCancel = useCallback(() => {
 		setActivePicker(null);
-	};
+	}, []);
 
 	function formatDateLabel(date: Date) {
 		return dayjs(date).format("DD/MM/YYYY");
@@ -213,14 +215,13 @@ export default function History() {
 				</View>
 			</View>
 
-			{activePicker && (
-				<DateTimePicker
-					value={activePicker === "startDate" || activePicker === "endDate" ? (activePicker === "startDate" ? startDate : endDate) : (activePicker === "startTime" ? startDate : endDate)}
-					mode={activePicker === "startDate" || activePicker === "endDate" ? "date" : "time"}
-					display={Platform.OS === "ios" ? "spinner" : "default"}
-					onChange={handlePickerChange}
-				/>
-			)}
+			<DateTimePickerModal
+				visible={activePicker !== null}
+				mode={activePicker === "startDate" || activePicker === "endDate" ? "date" : "time"}
+				value={activePicker === "startDate" || activePicker === "startTime" ? startDate : endDate}
+				onConfirm={handlePickerConfirm}
+				onCancel={handlePickerCancel}
+			/>
 
 			<TouchableOpacity
 				style={styles.searchButton}
