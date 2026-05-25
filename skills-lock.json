@@ -7,6 +7,12 @@
       "skillPath": "expo-react-native-javascript-best-practices/SKILL.md",
       "computedHash": "d07d599c8a2cee4c0b9c22f41118671cf21ab75be2522afeb4f1d32161e773e2"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    },
     "impeccable": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
