@@ -7,6 +7,12 @@
       "skillPath": "expo-react-native-javascript-best-practices/SKILL.md",
       "computedHash": "d07d599c8a2cee4c0b9c22f41118671cf21ab75be2522afeb4f1d32161e773e2"
     },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": "skill/SKILL.md",
+      "computedHash": "34e59a34b9705187e87039faa5d9585aebe0056ef657f761b905afef276a3362"
+    },
     "nodejs-backend-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
