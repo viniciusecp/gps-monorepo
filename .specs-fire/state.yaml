@@ -16,6 +16,55 @@ workspace:
       name: rastroutions-v2
       type: mobile
 intents:
+  - id: vehicle-ai-chat
+    title: Mini Chat com IA para Consulta de Veículos
+    status: in_progress
+    work_items:
+      - id: server-chat-openrouter
+        title: Server - OpenRouter Integration Service
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on: []
+        run_id: run-gps-monorepo-004
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-vehicle-query-tools
+        title: Server - Vehicle Query Tools for AI
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - server-chat-openrouter
+        run_id: run-gps-monorepo-004
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-chat-session
+        title: Server - Chat Session Store
+        status: completed
+        complexity: low
+        mode: autopilot
+        depends_on: []
+        run_id: run-gps-monorepo-004
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-chat-endpoint
+        title: Server - Chat SSE Endpoint
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - server-chat-openrouter
+          - server-vehicle-query-tools
+          - server-chat-session
+        run_id: run-gps-monorepo-004
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: app-chat-screen
+        title: App - Chat Screen UI
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - server-chat-endpoint
+        run_id: run-gps-monorepo-004
+        completed_at: 2026-05-26T00:17:05.184Z
   - id: vehicle-history
     title: Histórico de Coordenadas por Período
     status: completed
@@ -51,3 +100,23 @@ runs:
           mode: confirm
       started: 2026-05-25T00:29:51.294Z
       completed: 2026-05-25T00:38:32.195Z
+    - id: run-gps-monorepo-004
+      scope: wide
+      work_items:
+        - id: server-chat-session
+          intent: vehicle-ai-chat
+          mode: autopilot
+        - id: server-chat-openrouter
+          intent: vehicle-ai-chat
+          mode: confirm
+        - id: server-vehicle-query-tools
+          intent: vehicle-ai-chat
+          mode: confirm
+        - id: server-chat-endpoint
+          intent: vehicle-ai-chat
+          mode: confirm
+        - id: app-chat-screen
+          intent: vehicle-ai-chat
+          mode: confirm
+      started: 2026-05-25T23:53:16.250Z
+      completed: 2026-05-26T00:17:05.184Z

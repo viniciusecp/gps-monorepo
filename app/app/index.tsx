@@ -2,6 +2,7 @@ import { User } from "@/common/model";
 import Accounts from "@/components/accounts";
 import { Coordinates } from "@/components/coordinates";
 import EmptyState from "@/components/empty-state";
+import { ChatFloatButton } from "@/components/chat-float-button";
 import { HistoryFloatButton } from "@/components/history-float-button";
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { refreshAccessToken } from "@/src/services/api";
@@ -116,6 +117,7 @@ export default function Index() {
             onTokenExpired={handleTokenExpired}
           />
           <HistoryFloatButton selectedImei={selectedImei} />
+          <ChatFloatButton />
         </View>
       )}
     </SafeAreaView>

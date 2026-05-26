@@ -7,9 +7,13 @@ import fjwt from "@fastify/jwt";
 import authRoutes from "./routes/auth";
 import gprmcRoutes from "./routes/coordinates";
 import vehiclesRoutes from "./routes/vehicles";
+import chatRoutes from "./routes/chat";
 import { AuthService } from "./services/auth-service";
 import { GpsService } from "./services/gps-service";
 import { BemService } from "./services/bem-service";
+import { ChatSessionStore } from "./services/chat/session-store";
+import { OpenRouterService } from "./services/chat/openrouter-service";
+import { ChatService } from "./services/chat/chat-service";
 import { registerErrorHandler } from "./middleware/errorHandler";
 import { AppError } from "./errors/AppError";
 
@@ -22,6 +26,9 @@ declare module "fastify" {
 		authService: AuthService;
 		gpsService: GpsService;
 		bemService: BemService;
+		chatSessionStore: ChatSessionStore;
+		openrouterService: OpenRouterService;
+		chatService: ChatService;
 	}
 }
 
@@ -35,6 +42,14 @@ export async function buildApp() {
 	const authService = new AuthService();
 	const gpsService = new GpsService();
 	const bemService = new BemService();
+	const chatSessionStore = new ChatSessionStore();
+	const openrouterService = new OpenRouterService();
+	const chatService = new ChatService(
+		chatSessionStore,
+		openrouterService,
+		gpsService,
+		bemService,
+	);
 
 	app.decorate("authenticate", async (request: FastifyRequest, _reply: FastifyReply) => {
 		try {
@@ -46,10 +61,15 @@ export async function buildApp() {
 	app.decorate("authService", authService);
 	app.decorate("gpsService", gpsService);
 	app.decorate("bemService", bemService);
+	app.decorate("chatSessionStore", chatSessionStore);
+	app.decorate("openrouterService", openrouterService);
+	app.decorate("chatService", chatService);
+	chatSessionStore.startCleanup();
 
 	app.register(authRoutes, { prefix: "/api" });
 	app.register(gprmcRoutes, { prefix: "/api" });
 	app.register(vehiclesRoutes, { prefix: "/api" });
+	app.register(chatRoutes, { prefix: "/api" });
 
 	await registerErrorHandler(app);
 	return app;
