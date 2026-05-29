@@ -17,7 +17,7 @@ Two-tier GPS tracking system: Fastify REST API backend with MySQL database, cons
 - **Responsibilities**: Parse GPRMC GPS data, manage user accounts, serve vehicle locations
 - **Dependencies**: MySQL, Fastify JWT auth
 
-### App (rastroutions-v2)
+### App (rastroapp)
 
 - **Purpose**: Mobile GPS tracking client
 - **Responsibilities**: User authentication, real-time vehicle position display on map

@@ -31,7 +31,7 @@ Monorepo with two TypeScript packages: a Fastify REST API backend with Drizzle O
 
 **Auth**: JWT (15min access token, 365d refresh token), MD5 password hashing
 
-## App (rastroutions-v2)
+## App (rastroapp)
 
 ### UI Framework
 

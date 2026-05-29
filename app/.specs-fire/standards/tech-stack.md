@@ -1,6 +1,6 @@
 # Tech Stack — app/
 
-**Package**: rastroutions-v2
+**Package**: rastroapp
 **Type**: Mobile App
 
 ## Core

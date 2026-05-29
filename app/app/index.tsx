@@ -2,8 +2,7 @@ import { User } from "@/common/model";
 import Accounts from "@/components/accounts";
 import { Coordinates } from "@/components/coordinates";
 import EmptyState from "@/components/empty-state";
-import { ChatFloatButton } from "@/components/chat-float-button";
-import { HistoryFloatButton } from "@/components/history-float-button";
+import FABDropdownMenu from "@/components/fab-dropdown-menu";
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { refreshAccessToken } from "@/src/services/api";
 import { Colors, getSpacing, getTypography } from "@/src/theme";
@@ -116,8 +115,20 @@ export default function Index() {
             selectedImei={selectedImei}
             onTokenExpired={handleTokenExpired}
           />
-          <HistoryFloatButton selectedImei={selectedImei} />
-          <ChatFloatButton />
+          <FABDropdownMenu
+            options={[
+              {
+                icon: "schedule",
+                label: "Histórico",
+                onPress: () => router.push(`/history?imei=${selectedImei}`),
+              },
+              {
+                icon: "chat-bubble",
+                label: "Chat",
+                onPress: () => router.push("/chat"),
+              },
+            ]}
+          />
         </View>
       )}
     </SafeAreaView>

@@ -35,7 +35,6 @@ export default function AddAccount() {
     });
   }, []);
 
-  
   async function handleLogin() {
     if (!email || !password) {
       showError("Atenção", "Preencha todos os campos!");
@@ -105,26 +104,31 @@ export default function AddAccount() {
 
         <View style={styles.formContainer}>
           <View style={styles.card}>
-            <Text style={styles.title}>RastroApp</Text>
+            <View style={styles.cardAccent} />
+
+            <View style={styles.titleSection}>
+              <Text style={styles.title}>RastroApp</Text>
+              <Text style={styles.subtitle}>Adicionar conta</Text>
+            </View>
 
             <TextInput
               onChangeText={setEmail}
               value={email}
-              placeholder="Digite seu email aqui..."
+              placeholder="Email"
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect={false}
-              placeholderTextColor="#fafafa3e"
+              placeholderTextColor={Colors.textTertiary}
               style={styles.input}
             />
 
             <TextInput
               onChangeText={setPassword}
               value={password}
-              placeholder="Digite sua senha aqui..."
+              placeholder="Senha"
               secureTextEntry
-              placeholderTextColor="#fafafa3e"
+              placeholderTextColor={Colors.textTertiary}
               style={styles.input}
             />
 
@@ -132,7 +136,6 @@ export default function AddAccount() {
               label="Acessar"
               onClick={handleLogin}
               loading={isLoading}
-              containerStyle={{ marginTop: 18 }}
             />
           </View>
         </View>
@@ -153,30 +156,47 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: getSpacing("px4"),
+    paddingBottom: getSpacing("px12"),
   },
   card: {
+    backgroundColor: Colors.backgroundLight,
     borderWidth: 1,
     borderColor: Colors.borderLight,
     borderRadius: 8,
+    overflow: "hidden",
     paddingHorizontal: getSpacing("px3"),
-    paddingVertical: getSpacing("px6"),
+    paddingBottom: getSpacing("px5"),
+  },
+  cardAccent: {
+    height: 2,
+    backgroundColor: Colors.primary,
+  },
+  titleSection: {
+    alignItems: "center",
+    paddingTop: getSpacing("px8"),
+    paddingBottom: getSpacing("px6"),
   },
   title: {
     color: Colors.text,
     fontSize: getTypography("h1"),
     fontWeight: "bold",
-    alignSelf: "center",
-    marginBottom: getSpacing("px8"),
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    color: Colors.textSecondary,
+    fontSize: getTypography("body"),
+    marginTop: getSpacing("px1"),
+    marginBottom: getSpacing("px1"),
   },
   input: {
-    backgroundColor: Colors.backgroundLight,
+    backgroundColor: Colors.background,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 8,
     paddingVertical: getSpacing("px5"),
     paddingHorizontal: getSpacing("px3"),
     color: Colors.text,
-    marginBottom: getSpacing("px3"),
     fontSize: getTypography("body"),
+    marginBottom: getSpacing("px3"),
   },
 });

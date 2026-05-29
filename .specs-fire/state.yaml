@@ -13,13 +13,42 @@ workspace:
       name: gps-api
       type: backend
     - path: app
-      name: rastroutions-v2
+      name: rastroapp
       type: mobile
 intents:
   - id: vehicle-ai-chat
     title: Mini Chat com IA para Consulta de Veículos
-    status: in_progress
+    status: completed
     work_items:
+      - id: server-chat-openrouter
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-vehicle-query-tools
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-chat-session
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: server-chat-endpoint
+        completed_at: 2026-05-26T00:17:05.184Z
+      - id: app-chat-screen
+        completed_at: 2026-05-26T00:17:05.184Z
+  - id: fab-dropdown-menu
+    title: FAB Dropdown Menu para Ações da Tela Inicial
+    status: completed
+    work_items:
+      - id: 01-create-fab-dropdown-component
+        title: Criar componente FABDropdownMenu reutilizável
+        status: completed
+        complexity: medium
+        mode: autonomous
+        depends_on: []
+        completed_at: 2026-05-28T00:05:00Z
+      - id: 02-integrate-and-deploy
+        title: Integrar FABDropdownMenu na tela inicial
+        status: completed
+        complexity: low
+        mode: autonomous
+        depends_on:
+          - 01-create-fab-dropdown-component
+        completed_at: 2026-05-28T00:05:00Z
       - id: server-chat-openrouter
         title: Server - OpenRouter Integration Service
         status: completed

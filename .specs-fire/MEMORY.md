@@ -1,0 +1,1 @@
+- [FAB Dropdown Menu](intents/fab-dropdown-menu/brief.md) — Substituir dois botões flutuantes por FAB dropdown com animação
