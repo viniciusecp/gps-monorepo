@@ -16,19 +16,25 @@ import Animated, {
 interface Props {
   coordinate: Coordinate;
   index?: number;
+  animateOnMount?: boolean;
 }
 
-function CoordinateItem({ coordinate, index = 0 }: Props) {
+function CoordinateItem({ coordinate, index = 0, animateOnMount = true }: Props) {
   const router = useRouter();
   const scale = useSharedValue(1);
   const itemOpacity = useSharedValue(0);
   const itemTranslateY = useSharedValue(20);
 
   useEffect(() => {
+    if (!animateOnMount) {
+      itemOpacity.value = 1;
+      itemTranslateY.value = 0;
+      return;
+    }
     const delayMs = index * 60;
     itemOpacity.value = withDelay(delayMs, withTiming(1, { duration: 250, reduceMotion: ReduceMotion.System }));
     itemTranslateY.value = withDelay(delayMs, withSpring(0, { damping: 20, stiffness: 200, reduceMotion: ReduceMotion.System }));
-  }, [index, itemOpacity, itemTranslateY]);
+  }, [index, itemOpacity, itemTranslateY, animateOnMount]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,

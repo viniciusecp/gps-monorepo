@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -19,6 +19,7 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
+	ViewToken,
 } from "react-native";
 import MapView, { Polyline, Marker } from "react-native-maps";
 
@@ -38,10 +39,15 @@ export default function History() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [showMap, setShowMap] = useState(false);
 
+	const initialViewableIndices = useRef<Set<number> | null>(null);
+	const everSeenIndices = useRef<Set<number>>(new Set());
+
 	const fetchHistory = useCallback(async () => {
 		if (!imei) return;
 		setIsLoading(true);
 		setCoordinates([]);
+		initialViewableIndices.current = null;
+		everSeenIndices.current = new Set();
 		try {
 			const storageUsers = await AsyncStorage.getItem("users");
 			if (!storageUsers) return;
@@ -108,10 +114,28 @@ export default function History() {
 		return dayjs(date).format("HH:mm");
 	}
 
+	const viewabilityConfig = useMemo(
+		() => ({ itemVisiblePercentThreshold: 0 }),
+		[],
+	);
+
+	const onViewableItemsChanged = useCallback(
+		({ viewableItems }: { viewableItems: ViewToken<Coordinate>[]; changed: ViewToken<Coordinate>[] }) => {
+			if (initialViewableIndices.current === null) {
+				initialViewableIndices.current = new Set(viewableItems.map(v => v.index!));
+			}
+			viewableItems.forEach(v => everSeenIndices.current.add(v.index!));
+		},
+		[],
+	);
+
 	const renderCoordinateItem = useCallback(
-		({ item, index }: { item: Coordinate; index: number }) => (
-			<CoordinateItem coordinate={item} index={index} />
-		),
+		({ item, index }: { item: Coordinate; index: number }) => {
+			const isInitialViewable = initialViewableIndices.current?.has(index) ?? true;
+			const hasBeenSeen = everSeenIndices.current.has(index);
+			const animateOnMount = isInitialViewable && !hasBeenSeen;
+			return <CoordinateItem coordinate={item} index={index} animateOnMount={animateOnMount} />;
+		},
 		[],
 	);
 
@@ -294,6 +318,8 @@ export default function History() {
 							data={coordinates}
 							renderItem={renderCoordinateItem}
 							keyExtractor={keyExtractor}
+							onViewableItemsChanged={onViewableItemsChanged}
+							viewabilityConfig={viewabilityConfig}
 							showsVerticalScrollIndicator={false}
 							removeClippedSubviews
 							maxToRenderPerBatch={10}

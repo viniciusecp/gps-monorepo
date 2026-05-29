@@ -115,6 +115,17 @@ intents:
           - server-history-endpoint
         run_id: run-gps-monorepo-001
         completed_at: 2026-05-25T00:38:32.195Z
+  - id: coordinate-viewport-animation
+    title: Coordinate Viewport-Triggered Animation
+    status: completed
+    work_items:
+      - id: viewport-animation
+        title: Viewport-Triggered Coordinate Animation
+        status: completed
+        complexity: low
+        mode: autopilot
+        depends_on: []
+        completed_at: 2026-05-29T00:00:00Z
 runs:
   active: []
   completed:
