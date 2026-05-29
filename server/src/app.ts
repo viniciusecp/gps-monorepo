@@ -8,12 +8,14 @@ import authRoutes from "./routes/auth";
 import gprmcRoutes from "./routes/coordinates";
 import vehiclesRoutes from "./routes/vehicles";
 import chatRoutes from "./routes/chat";
+import geocodeRoutes from "./routes/geocode";
 import { AuthService } from "./services/auth-service";
 import { GpsService } from "./services/gps-service";
 import { BemService } from "./services/bem-service";
 import { ChatSessionStore } from "./services/chat/session-store";
 import { OpenRouterService } from "./services/chat/openrouter-service";
 import { ChatService } from "./services/chat/chat-service";
+import { NominatimService } from "./services/geocode/nominatim-service";
 import { registerErrorHandler } from "./middleware/errorHandler";
 import { AppError } from "./errors/AppError";
 
@@ -29,6 +31,7 @@ declare module "fastify" {
 		chatSessionStore: ChatSessionStore;
 		openrouterService: OpenRouterService;
 		chatService: ChatService;
+		geocodeService: NominatimService;
 	}
 }
 
@@ -44,6 +47,7 @@ export async function buildApp() {
 	const bemService = new BemService();
 	const chatSessionStore = new ChatSessionStore();
 	const openrouterService = new OpenRouterService();
+	const geocodeService = new NominatimService();
 	const chatService = new ChatService(
 		chatSessionStore,
 		openrouterService,
@@ -64,12 +68,14 @@ export async function buildApp() {
 	app.decorate("chatSessionStore", chatSessionStore);
 	app.decorate("openrouterService", openrouterService);
 	app.decorate("chatService", chatService);
+	app.decorate("geocodeService", geocodeService);
 	chatSessionStore.startCleanup();
 
 	app.register(authRoutes, { prefix: "/api" });
 	app.register(gprmcRoutes, { prefix: "/api" });
 	app.register(vehiclesRoutes, { prefix: "/api" });
 	app.register(chatRoutes, { prefix: "/api" });
+	app.register(geocodeRoutes, { prefix: "/api" });
 
 	await registerErrorHandler(app);
 	return app;

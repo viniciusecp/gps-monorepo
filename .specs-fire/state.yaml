@@ -126,6 +126,39 @@ intents:
         mode: autopilot
         depends_on: []
         completed_at: 2026-05-29T00:00:00Z
+  - id: nominatim-integration
+    title: Integração com Nominatim Reverse Geocoding
+    status: in_progress
+    work_items:
+      - id: server-nominatim-service
+        title: Server - NominatimService + Config
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on: []
+        created: 2026-05-29T12:00:00Z
+        run_id: run-gps-monorepo-005
+        completed_at: 2026-05-29T15:03:00.288Z
+      - id: server-geocode-endpoint
+        title: Server - Geocode Route & Controller
+        status: completed
+        complexity: low
+        mode: autopilot
+        depends_on:
+          - server-nominatim-service
+        created: 2026-05-29T12:00:00Z
+        run_id: run-gps-monorepo-005
+        completed_at: 2026-05-29T15:03:00.288Z
+      - id: app-map-display-name
+        title: App - Map Screen Display Name
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - server-geocode-endpoint
+        created: 2026-05-29T12:00:00Z
+        run_id: run-gps-monorepo-005
+        completed_at: 2026-05-29T15:03:00.288Z
 runs:
   active: []
   completed:
@@ -160,3 +193,17 @@ runs:
           mode: confirm
       started: 2026-05-25T23:53:16.250Z
       completed: 2026-05-26T00:17:05.184Z
+    - id: run-gps-monorepo-005
+      scope: wide
+      work_items:
+        - id: server-nominatim-service
+          intent: nominatim-integration
+          mode: confirm
+        - id: server-geocode-endpoint
+          intent: nominatim-integration
+          mode: autopilot
+        - id: app-map-display-name
+          intent: nominatim-integration
+          mode: confirm
+      started: 2026-05-29T14:57:00.690Z
+      completed: 2026-05-29T15:03:00.288Z
