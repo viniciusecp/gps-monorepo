@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AccessibilityInfo, Animated, Easing, StyleSheet, TouchableOpacity, View } from "react-native";
+import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { Colors, Spacing } from "@/src/theme";
 
@@ -16,9 +16,10 @@ interface FABDropdownMenuProps {
 
 function FABDropdownMenu({ options }: FABDropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(true);
   const fabScale = useRef(new Animated.Value(1)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const iconRotation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
@@ -43,6 +44,7 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
 
     if (reduceMotion) {
       overlayOpacity.setValue(1);
+      iconRotation.setValue(1);
       options.forEach((_, i) => {
         optionAnims[i].translateY.setValue(0);
         optionAnims[i].opacity.setValue(1);
@@ -52,6 +54,12 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
 
     Animated.parallel([
       Animated.timing(overlayOpacity, {
+        toValue: 1,
+        useNativeDriver: true,
+        duration: 150,
+        easing: Easing.out(Easing.exp),
+      }),
+      Animated.timing(iconRotation, {
         toValue: 1,
         useNativeDriver: true,
         duration: 150,
@@ -74,13 +82,14 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
         ]),
       ),
     ]).start();
-  }, [options, optionAnims, overlayOpacity, reduceMotion]);
+  }, [options, optionAnims, overlayOpacity, reduceMotion, iconRotation]);
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
 
     if (reduceMotion) {
       overlayOpacity.setValue(0);
+      iconRotation.setValue(0);
       options.forEach((_, i) => {
         optionAnims[i].translateY.setValue(80);
         optionAnims[i].opacity.setValue(0);
@@ -89,6 +98,12 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
     }
 
     Animated.parallel([
+      Animated.timing(iconRotation, {
+        toValue: 0,
+        useNativeDriver: true,
+        duration: 150,
+        easing: Easing.out(Easing.exp),
+      }),
       Animated.timing(overlayOpacity, {
         toValue: 0,
         useNativeDriver: true,
@@ -113,7 +128,7 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
         ]);
       }),
     ]).start();
-  }, [options, optionAnims, overlayOpacity, reduceMotion]);
+  }, [options, optionAnims, overlayOpacity, reduceMotion, iconRotation]);
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -125,6 +140,7 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
           style={StyleSheet.absoluteFill}
           onPress={closeMenu}
           activeOpacity={1}
+          accessibilityLabel="Fechar menu"
         />
       </Animated.View>
 
@@ -133,7 +149,6 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
           <Animated.View
             key={option.label}
             style={[
-              styles.optionWrapper,
               {
                 transform: [{ translateY: optionAnims[i].translateY }],
                 opacity: optionAnims[i].opacity,
@@ -151,6 +166,7 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
               accessibilityRole="button"
             >
               <MaterialIcons name={option.icon} size={20} color={Colors.text} />
+              <Text style={styles.optionLabel}>{option.label}</Text>
             </TouchableOpacity>
           </Animated.View>
         ))}
@@ -184,7 +200,24 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
           accessibilityLabel={isOpen ? "Fechar menu" : "Abrir menu"}
           accessibilityRole="button"
         >
-          <MaterialIcons name="more-vert" size={24} color={Colors.text} />
+          <Animated.View
+            style={{
+              width: "100%",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              transform: [
+                {
+                  rotate: iconRotation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "180deg"],
+                  }),
+                },
+              ],
+            }}
+          >
+            <MaterialIcons name={isOpen ? "close" : "more-vert"} size={24} color={Colors.text} />
+          </Animated.View>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -211,21 +244,27 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     position: "absolute",
-    bottom: 80,
+    bottom: Spacing.px5 + Spacing.px11 + Spacing.px1,
     right: Spacing.px5,
-    alignItems: "center",
+    alignItems: "flex-end",
     gap: Spacing.px3,
-  },
-  optionWrapper: {
-    marginBottom: Spacing.px1,
+    maxHeight: 300,
+    overflow: "hidden",
   },
   optionButton: {
-    width: 50,
     height: 50,
     borderRadius: 25,
     backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  optionLabel: {
+    color: Colors.text,
+    fontSize: 14,
+    fontWeight: "500",
   },
   fab: {
     position: "absolute",
@@ -238,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: Colors.primaryDark,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
 });
 

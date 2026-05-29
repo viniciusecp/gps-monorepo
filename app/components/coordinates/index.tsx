@@ -18,6 +18,7 @@ interface Props {
 export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
   const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { showError } = useErrorPopup();
 
   const renderCoordinateItem = useCallback(({ item, index }: { item: Coordinate, index: number }) => (
@@ -27,6 +28,33 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
   const keyExtractor = useCallback((item: Coordinate) =>
     `${item.latitude}-${item.longitude}-${item.time}`, []);
 
+  const fetchCoordinates = useCallback(async (): Promise<Coordinate[]> => {
+    const user = users.find((u) =>
+      u.vehicles.some((v) => v.imei === selectedImei),
+    );
+
+    if (!user) {
+      return [];
+    }
+
+    const data: { coordinates: any[] } = await tryAuthRequest(
+      `/api/gprmc/coordinates/${selectedImei}`,
+      user.email,
+      () => user.accessToken,
+      () => user.refreshToken,
+    );
+
+    return data.coordinates.map((coordinate: any) => ({
+      latitude: coordinate.latitudeDecimalDegrees,
+      longitude: coordinate.longitudeDecimalDegrees,
+      date: dayjs(coordinate.date).format("DD/MM/YYYY"),
+      time: dayjs(coordinate.date)
+        .tz("America/Sao_Paulo")
+        .format("HH:mm:ss"),
+      speed: Math.round(coordinate.speed),
+    }));
+  }, [users, selectedImei]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -35,34 +63,9 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
       setCoordinates([]);
 
       try {
-        const user = users.find((u) =>
-          u.vehicles.some((v) => v.imei === selectedImei),
-        );
-
-        if (!user) {
-          return;
-        }
-
-        const data: { coordinates: any[] } = await tryAuthRequest(
-          `/api/gprmc/coordinates/${selectedImei}`,
-          user.email,
-          () => user.accessToken,
-          () => user.refreshToken,
-        );
-
+        const result = await fetchCoordinates();
         if (cancelled) return;
-
-        setCoordinates(
-          data.coordinates.map((coordinate: any) => ({
-            latitude: coordinate.latitudeDecimalDegrees,
-            longitude: coordinate.longitudeDecimalDegrees,
-            date: dayjs(coordinate.date).format("DD/MM/YYYY"),
-            time: dayjs(coordinate.date)
-              .tz("America/Sao_Paulo")
-              .format("HH:mm:ss"),
-            speed: Math.round(coordinate.speed),
-          })),
-        );
+        setCoordinates(result);
       } catch (error) {
         if (cancelled) return;
 
@@ -94,7 +97,35 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [users, selectedImei, onTokenExpired, showError]);
+  }, [users, selectedImei, onTokenExpired, showError, fetchCoordinates]);
+
+  async function handleRefresh() {
+    setIsRefreshing(true);
+
+    try {
+      const result = await fetchCoordinates();
+      setCoordinates(result);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        const user = users.find((u) =>
+          u.vehicles.some((v) => v.imei === selectedImei),
+        );
+        if (user && onTokenExpired) {
+          onTokenExpired(user.email);
+        }
+      } else {
+        const message =
+          error instanceof ApiError
+            ? `Erro no servidor (${error.status})`
+            : error instanceof Error
+              ? error.message
+              : "Erro desconhecido";
+        showError("Erro ao carregar coordenadas", message);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -132,6 +163,8 @@ export function Coordinates({ users, selectedImei, onTokenExpired }: Props) {
       maxToRenderPerBatch={10}
       windowSize={5}
       contentContainerStyle={styles.listContent}
+      refreshing={isRefreshing}
+      onRefresh={handleRefresh}
     />
   );
 }
