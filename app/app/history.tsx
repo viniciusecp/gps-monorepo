@@ -1,6 +1,6 @@
 import { Coordinate } from "@/common/model";
 import CoordinateItem from "@/components/coordinates/coordinate-item";
-import BackButton from "@/components/back-button";
+
 import { useErrorPopup } from "@/src/context/ErrorPopupContext";
 import { ApiError, tryAuthRequest } from "@/src/services/api";
 import { Colors, getSpacing, getTypography } from "@/src/theme";
@@ -232,7 +232,11 @@ export default function History() {
 		return (
 			<View style={styles.container}>
 				<View style={styles.header}>
-					<BackButton />
+					<TouchableOpacity onPress={() => router.back()}>
+						<FontAwesome6 name="arrow-left" size={20} color={Colors.text} />
+					</TouchableOpacity>
+					<Text style={styles.headerTitle}>Histórico</Text>
+					<View style={{ width: 20 }} />
 				</View>
 				<View style={styles.centerContent}>
 					<FontAwesome6 name="map-location-dot" size={48} color={Colors.textTertiary} />
@@ -245,10 +249,11 @@ export default function History() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
-				<TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-					<FontAwesome6 name="arrow-left" size={22} color={Colors.text} />
+				<TouchableOpacity onPress={() => router.back()}>
+					<FontAwesome6 name="arrow-left" size={20} color={Colors.text} />
 				</TouchableOpacity>
 				<Text style={styles.headerTitle}>Histórico</Text>
+				<View style={{ width: 20 }} />
 			</View>
 
 			<View style={styles.searchCard}>
@@ -492,22 +497,18 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: getSpacing("px4"),
-		paddingHorizontal: getSpacing("px5"),
+		justifyContent: "space-between",
+		paddingHorizontal: getSpacing("px4"),
 		paddingTop: getSpacing("px4"),
 		paddingBottom: getSpacing("px3"),
 		borderBottomWidth: StyleSheet.hairlineWidth,
 		borderBottomColor: Colors.border,
-	},
-	backButton: {
-		padding: getSpacing("px2"),
 	},
 	headerTitle: {
 		fontSize: getTypography("h3"),
 		fontWeight: getTypography("fontWeight").bold,
 		color: Colors.text,
 		letterSpacing: -0.3,
-		flex: 1,
 	},
 	centerContent: {
 		flex: 1,

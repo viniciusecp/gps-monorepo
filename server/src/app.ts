@@ -53,6 +53,7 @@ export async function buildApp() {
 		openrouterService,
 		gpsService,
 		bemService,
+		geocodeService,
 	);
 
 	app.decorate("authenticate", async (request: FastifyRequest, _reply: FastifyReply) => {

@@ -126,6 +126,48 @@ intents:
         mode: autopilot
         depends_on: []
         completed_at: 2026-05-29T00:00:00Z
+  - id: chat-ia-inteligente
+    title: Chat IA Inteligente - Contexto do Usuário e Mais Ferramentas
+    status: completed
+    work_items:
+      - id: fix-speed-unit
+        title: Server - Correção de Unidade de Velocidade
+        status: completed
+        complexity: low
+        mode: autopilot
+        depends_on: []
+        created: 2026-05-29T16:30:00Z
+        run_id: run-gps-monorepo-006
+        completed_at: 2026-05-29T22:03:30.742Z
+      - id: context-aware-prompt
+        title: Server - System Prompt com Contexto do Usuário
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on: []
+        created: 2026-05-29T16:30:00Z
+        run_id: run-gps-monorepo-006
+        completed_at: 2026-05-29T22:03:30.742Z
+      - id: reverse-geocode-tool
+        title: Server - Reverse Geocoding Tool para IA
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - context-aware-prompt
+        created: 2026-05-29T16:30:00Z
+        run_id: run-gps-monorepo-006
+        completed_at: 2026-05-29T22:03:30.742Z
+      - id: enhanced-history-speed-tools
+        title: Server - Aprimorar Ferramentas de Histórico e Velocidade
+        status: completed
+        complexity: medium
+        mode: confirm
+        depends_on:
+          - reverse-geocode-tool
+        created: 2026-05-29T16:30:00Z
+        run_id: run-gps-monorepo-006
+        completed_at: 2026-05-29T22:03:30.742Z
   - id: nominatim-integration
     title: Integração com Nominatim Reverse Geocoding
     status: in_progress
@@ -207,3 +249,20 @@ runs:
           mode: confirm
       started: 2026-05-29T14:57:00.690Z
       completed: 2026-05-29T15:03:00.288Z
+    - id: run-gps-monorepo-006
+      scope: wide
+      work_items:
+        - id: fix-speed-unit
+          intent: chat-ia-inteligente
+          mode: autopilot
+        - id: context-aware-prompt
+          intent: chat-ia-inteligente
+          mode: confirm
+        - id: reverse-geocode-tool
+          intent: chat-ia-inteligente
+          mode: confirm
+        - id: enhanced-history-speed-tools
+          intent: chat-ia-inteligente
+          mode: confirm
+      started: 2026-05-29T21:55:19.878Z
+      completed: 2026-05-29T22:03:30.742Z

@@ -20,6 +20,7 @@ export interface ChatSession {
 	messages: ChatMessage[];
 	createdAt: Date;
 	lastActivity: Date;
+	metadata?: Record<string, unknown>;
 }
 
 export class ChatSessionStore {
