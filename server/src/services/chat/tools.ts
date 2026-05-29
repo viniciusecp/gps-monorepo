@@ -183,7 +183,7 @@ export const tools: ToolHandler[] = [
 				return "Nenhuma informação de velocidade disponível para este veículo.";
 			}
 			const c = coords[0];
-			const speed = c.speed || c.speed == 0 ? `${c.speed.toFixed(1)} km/h` : "N/A";
+			const speed = c.speed || c.speed === 0 ? `${c.speed.toFixed(1)} km/h` : "N/A";
 			const date = new Date(c.date);
 			date.setTime(date.getTime() + (3 * 60 * 60 * 1000));
 			return `**Velocidade do veículo**: ${speed}\nRegistrada em: ${date}`;

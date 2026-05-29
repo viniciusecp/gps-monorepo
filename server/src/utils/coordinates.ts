@@ -22,7 +22,7 @@ export function convertCoordinates(
 
 
 		// latitude: always prepend "0"
-		const latStr = "0" + latDegStr;
+		const latStr = `0${latDegStr}`;
 		let g = parseFloat(latStr.substring(0, 3));
 		let d = parseFloat(latStr.substring(3));
 		let latitudeDecimalDegrees = g + d / 60;
@@ -33,7 +33,7 @@ export function convertCoordinates(
 		// longitude: prepend "0" only if length is 9
 		let lonStr = lonDegStr;
 		if (lonStr.length === 9) {
-			lonStr = "0" + lonStr;
+			lonStr = `0${lonStr}`;
 		}
 		g = parseFloat(lonStr.substring(0, 3));
 		d = parseFloat(lonStr.substring(3));

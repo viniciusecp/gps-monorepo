@@ -64,7 +64,7 @@ function CoordinateItem({ coordinate, index = 0, animateOnMount = true }: Props)
       <TouchableOpacity
         onPress={() =>
           router.push(
-            `/map?latitude=${coordinate.latitude}&longitude=${coordinate.longitude}`
+            `/map?latitude=${coordinate.latitude}&longitude=${coordinate.longitude}&speed=${coordinate.speed}&date=${coordinate.date}&time=${coordinate.time}`
           )
         }
         onPressIn={handlePressIn}
