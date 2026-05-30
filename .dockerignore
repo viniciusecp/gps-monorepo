@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.git
+drizzle
+*.tsbuildinfo
+app
+server/node_modules
+server/dist
+server/.env

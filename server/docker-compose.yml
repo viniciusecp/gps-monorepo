@@ -1,12 +1,22 @@
-version: "3.8"
-
 services:
   gps-api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: server/Dockerfile
     container_name: gps-api
-    restart: always
+    restart: unless-stopped
+    ports:
+      - "3333:3333"
     env_file:
       - .env
-    network_mode: "host"
+    environment:
+      - DB_HOST=host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    mem_limit: 512M
+    cpus: "1.0"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

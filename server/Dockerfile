@@ -6,35 +6,30 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm@10
 
-# Copy package files for dependency installation
-COPY package.json pnpm-lock.yaml* ./
+# Copy monorepo config preserving workspace structure
+COPY package.json ./
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+COPY server/package.json server/
 
-# Install all dependencies (including dev for build)
+# Install dependencies (workspace-aware)
 RUN pnpm install --frozen-lockfile
 
-# Copy source files
-COPY . .
-
-# Build TypeScript
-RUN pnpm build
+# Copy server source and build
+COPY server/ server/
+RUN pnpm --filter gps-api build
 
 # Production stage
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Install pnpm for production install
-RUN npm install -g pnpm@10
-
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
-
-# Install only production dependencies
-RUN pnpm install --prod --frozen-lockfile
-
-# Copy built output from builder
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.env.example ./.env.example
+# Copy only what's needed at runtime
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/server/dist ./server/dist
+COPY --from=builder /app/server/package.json ./server/package.json
+COPY --from=builder /app/server/node_modules ./server/node_modules
 
 # Set environment
 ENV NODE_ENV=production
@@ -43,4 +38,4 @@ ENV PORT=3333
 EXPOSE 3333
 
 # Run the application
-CMD ["node", "dist/index.js"]
+CMD ["node", "server/dist/index.js"]
