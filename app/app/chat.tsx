@@ -4,7 +4,7 @@ import { Colors, getSpacing, getTypography } from "@/src/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
@@ -197,6 +197,7 @@ function MarkdownText({ content, style }: { content: string; style?: any }) {
 
 export default function ChatScreen() {
   const router = useRouter();
+  const { imei } = useLocalSearchParams<{ imei: string }>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -211,13 +212,14 @@ export default function ChatScreen() {
       const storageUsers = await AsyncStorage.getItem("users");
       if (storageUsers) {
         const parsed: User[] = JSON.parse(storageUsers);
-        if (parsed.length > 0) {
-          setUser(parsed[0]);
-        }
+        const matchedUser = imei
+          ? parsed.find((u) => u.vehicles.some((v) => v.imei === imei))
+          : undefined;
+        setUser(matchedUser ?? parsed[0] ?? null);
       }
     }
     loadUser();
-  }, []);
+  }, [imei]);
 
   const scrollToEnd = useCallback(() => {
     setTimeout(() => {

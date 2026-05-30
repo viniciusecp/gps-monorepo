@@ -69,7 +69,7 @@ export const tools: ToolHandler[] = [
 			type: "function",
 			function: {
 				name: "get_vehicle_current_location",
-				description: "Get the current/last known location of a vehicle by its IMEI number",
+				description: "Get the CURRENT/MOST RECENT location of a vehicle. NÃO usa para horários passados ou específicos — para isso use get_vehicle_history com specificTime.",
 				parameters: {
 					type: "object",
 					properties: {
@@ -95,7 +95,7 @@ export const tools: ToolHandler[] = [
 			const c = coords[0];
 			const lat = c.latitudeDecimalDegrees;
 			const lng = c.longitudeDecimalDegrees;
-			const speed = c.speed ? `${c.speed.toFixed(1)} km/h` : "N/A";
+			const speed = (c.speed || c.speed === 0) ? `${c.speed.toFixed(1)} km/h` : "N/A";
 			const date = c.date ? brtDate(new Date(c.date)).toLocaleString("pt-BR") : "N/A";
 			return (
 				`**Localização atual do veículo**\n` +
@@ -112,7 +112,7 @@ export const tools: ToolHandler[] = [
 			function: {
 				name: "get_vehicle_history",
 				description:
-					"Get the position history of a vehicle within a date range. Use this to answer questions about where a vehicle was at a specific time or period. For 'where was my car at day X at time Y' questions, use the specificTime parameter.",
+					"Get the position history of a vehicle within a date range. For 'where was my car at day X at time Y' or 'onde estava o veículo às Y horas do dia X', you MUST use the specificTime parameter. NEVER rely on startDate/endDate alone for specific-time questions. The tool searches within ±15min and automatically finds the nearest GPS record — even if no exact point exists at that minute, it returns the closest one.",
 				parameters: {
 					type: "object",
 					properties: {
@@ -123,17 +123,17 @@ export const tools: ToolHandler[] = [
 						startDate: {
 							type: "string",
 							description:
-								"Start date in ISO format (YYYY-MM-DDTHH:mm:ssZ) or YYYY-MM-DD",
+								"Start date do período em BRT (UTC-3, horário do Brasil). Usar para consultas de histórico em um intervalo (ex: 'como foi o dia'). NÃO usar para horário específico — nesse caso use specificTime. Usar offset -03:00. Exemplo: meia-noite de 28/05 → '2026-05-28T00:00:00-03:00'.",
 						},
 						endDate: {
 							type: "string",
 							description:
-								"End date in ISO format (YYYY-MM-DDTHH:mm:ssZ) or YYYY-MM-DD",
+								"End date do período em BRT (UTC-3, horário do Brasil). Usar para consultas de histórico em um intervalo. NÃO usar para horário específico — nesse caso use specificTime. Usar offset -03:00. Exemplo: 23:59:59 de 28/05 → '2026-05-28T23:59:59-03:00'.",
 						},
 						specificTime: {
 							type: "string",
 							description:
-								"Optional. An ISO timestamp to find the closest GPS point to that moment. Use this for questions like 'onde estava no dia X às Y horas'. Example: '2026-05-28T14:30:00Z'",
+								"OBRIGATÓRIO para perguntas de horário específico. Timestamp em BRT (UTC-3, horário do Brasil). Busca o ponto GPS mais próximo dentro de ±15min, com fallback automático para ±1h se necessário. Passar o horário exato que o usuário falou, incluindo offset -03:00. Exemplo: se falar '17:30' em 28/05 → '2026-05-28T17:30:00-03:00'.",
 						},
 					},
 					required: ["imei", "startDate", "endDate"],
@@ -154,15 +154,25 @@ export const tools: ToolHandler[] = [
 
 			if (specificTime) {
 				const t = new Date(specificTime).getTime();
-				const fiveMin = 5 * 60 * 1000;
-				queryStart = new Date(t - fiveMin).toISOString();
-				queryEnd = new Date(t + fiveMin).toISOString();
+				const rangeMs = 15 * 60 * 1000;
+				queryStart = new Date(t - rangeMs).toISOString();
+				queryEnd = new Date(t + rangeMs).toISOString();
 			}
 
 			const result = await gpsService.getCoordinatesByDateRange(imei, queryStart, queryEnd);
-			const coords = result.coordinates;
+			let coords = result.coordinates;
 			if (!coords || coords.length === 0) {
-				return "Nenhum histórico encontrado para o período informado.";
+				if (specificTime) {
+					const t = new Date(specificTime).getTime();
+					const widerRange = 60 * 60 * 1000;
+					queryStart = new Date(t - widerRange).toISOString();
+					queryEnd = new Date(t + widerRange).toISOString();
+					const retry = await gpsService.getCoordinatesByDateRange(imei, queryStart, queryEnd);
+					coords = retry.coordinates;
+				}
+				if (!coords || coords.length === 0) {
+					return "Nenhum histórico encontrado para o período informado.";
+				}
 			}
 
 			const total = coords.length;
@@ -174,10 +184,10 @@ export const tools: ToolHandler[] = [
 			if (specificTime) {
 				const targetMs = new Date(specificTime).getTime();
 				let closest = coords[0];
-				let closestDiff = Math.abs(brtDate(new Date(closest.date)).getTime() - targetMs);
+				let closestDiff = Math.abs(new Date(closest.date).getTime() - targetMs);
 
 				for (const c of coords) {
-					const diff = Math.abs(brtDate(new Date(c.date)).getTime() - targetMs);
+					const diff = Math.abs(new Date(c.date).getTime() - targetMs);
 					if (diff < closestDiff) {
 						closest = c;
 						closestDiff = diff;
@@ -194,7 +204,7 @@ export const tools: ToolHandler[] = [
 
 				const diffMinutes = Math.round(closestDiff / 60000);
 				return (
-					`**Localização do veículo em ${brtDate(new Date(specificTime)).toLocaleString("pt-BR")}**\n` +
+					`**Localização do veículo em ${new Date(specificTime).toLocaleString("pt-BR")}**\n` +
 					`Ponto mais próximo: ${closest.latitudeDecimalDegrees}°, ${closest.longitudeDecimalDegrees}°\n` +
 					`(diferença de aproximadamente ${diffMinutes} minuto(s))\n` +
 					`Velocidade: ${closest.speed ? `${closest.speed.toFixed(1)} km/h` : "N/A"}\n` +
@@ -204,7 +214,7 @@ export const tools: ToolHandler[] = [
 			}
 
 			return (
-				`**Histórico do veículo (${new Date(startDate).toLocaleDateString("pt-BR")} - ${new Date(endDate).toLocaleDateString("pt-BR")})**\n` +
+				`**Histórico do veículo (${new Date(startDate).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })} - ${new Date(endDate).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })})**\n` +
 				`Total de pontos registrados: ${total}\n` +
 				`Velocidade máxima: ${maxSpeed.toFixed(1)} km/h\n` +
 				`Velocidade média: ${avgSpeed.toFixed(1)} km/h\n` +

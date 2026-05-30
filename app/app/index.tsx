@@ -125,7 +125,7 @@ export default function Index() {
               {
                 icon: "chat-bubble",
                 label: "Chat",
-                onPress: () => router.push("/chat"),
+                onPress: () => router.push(`/chat?imei=${selectedImei}`),
               },
             ]}
           />

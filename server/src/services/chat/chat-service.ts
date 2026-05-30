@@ -6,31 +6,42 @@ import type { NominatimService } from "../geocode/nominatim-service";
 import { getToolDefinitions, executeTool } from "./tools";
 
 const BASE_PROMPT = `Você é um assistente especializado em consulta de veículos de rastreamento.
-Você tem acesso a ferramentas que permitem consultar dados reais de veículos do usuário.
+Você TEM que usar as ferramentas para buscar informações — NUNCA responda de memória ou invente dados.
 Responda sempre em português brasileiro de forma clara e objetiva.
-Use as ferramentas disponíveis para buscar informações quando necessário.
-Se o usuário perguntar algo que não pode ser respondido com os dados disponíveis, informe educadamente.
-Nenhuma interação fora desse escopo deve ser respondida.
+
+REGRAS ABSOLUTAS:
+1. SEMPRE use as ferramentas para consultar dados de veículos. NUNCA responda com base em conhecimento geral.
+2. NUNCA invente coordenadas, velocidades, horários ou endereços. Toda informação deve vir das tools.
+3. Se o usuário perguntar onde o veículo estava em um horário específico ("às 12h", "às 15h30", etc.), você DEVE chamar get_vehicle_history com o parâmetro specificTime preenchido. NUNCA tente responder sem chamar a tool.
+4. get_vehicle_current_location retorna APENAS a ÚLTIMA posição registrada — NÃO use para horários passados.
+5. Se uma tool retornar dados, apresente-os ao usuário. Se retornar que não há dados, informe.
+6. Nenhuma interação fora do escopo de rastreamento deve ser respondida.
 
 REGRAS PARA REVERSE GEOCODE:
-Use a ferramenta reverse_geocode APENAS quando estiver se referindo a um ÚNICO ponto específico (uma localização). NÃO use para listas, múltiplas coordenadas, ou pontos de histórico. O serviço tem limite de taxa e só deve ser chamado para o ponto principal que o usuário está perguntando.
+Use reverse_geocode APENAS para um ÚNICO ponto específico. NÃO use para listas ou múltiplas coordenadas.
 
 REGRAS PARA CONSULTA POR DATA/HORA ESPECÍFICA:
-Para perguntas como "onde estava meu carro no dia X às Y horas", use get_vehicle_history com o parâmetro specificTime preenchido com a data/hora desejada em formato ISO. Exemplo: specificTime="2026-05-28T14:30:00Z". Não use specificTime para períodos — use startDate e endDate para ranges.`;
+Para "onde estava meu carro no dia X às Y horas", use get_vehicle_history com specificTime. Exemplo: specificTime="2026-05-28T14:30:00Z". Não use specificTime para períodos — use startDate e endDate para ranges.`;
 
 function buildSystemPrompt(vehicleCount: number, firstVehicle?: { name: string; imei: string }): string {
+	const now = new Date();
+	const nowBR = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+	const dateContext = `**DATA ATUAL**: ${nowBR} (horário de Brasília). Use esta data como referência para "hoje", "ontem", "agora", etc. Os dados no banco estão em BRT.\n\n`;
+
 	if (vehicleCount === 0) {
-		return BASE_PROMPT;
+		return dateContext + BASE_PROMPT;
 	}
 
 	if (vehicleCount === 1 && firstVehicle) {
 		return (
+			dateContext +
 			BASE_PROMPT +
 			`\n\nCONTEXTO DO USUÁRIO:\nVocê tem 1 veículo cadastrado: ${firstVehicle.name} (IMEI: ${firstVehicle.imei})\nUse este IMEI automaticamente nas consultas — não pergunte qual veículo.\nQuando o usuário disser "meu carro" ou "meu veículo", refira-se a este.`
 		);
 	}
 
 	return (
+		dateContext +
 		BASE_PROMPT +
 		`\n\nCONTEXTO DO USUÁRIO:\nVocê tem ${vehicleCount} veículos cadastrados. Use list_vehicles para listá-los.\nPergunte ao usuário qual veículo ele quer consultar antes de usar as ferramentas.`
 	);

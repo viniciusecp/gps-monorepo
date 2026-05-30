@@ -34,7 +34,7 @@ export default function Accounts({
       >
         <View style={styles.container}>
           {users.map((user) => (
-            <Fragment key={user.name}>
+            <Fragment key={user.id}>
               <AccountItem
                 type="user"
                 title={user.name}
@@ -43,7 +43,7 @@ export default function Accounts({
 
               {user.vehicles.map((vehicle) => (
                 <AccountItem
-                  key={vehicle.name}
+                  key={vehicle.imei}
                   type="vehicle"
                   title={vehicle.name}
                   isSelected={selectedImei === vehicle.imei}

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  gps-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gps-api
+    restart: always
+    env_file:
+      - .env
+    network_mode: "host"
