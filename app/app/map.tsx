@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -178,17 +179,35 @@ export default function Map() {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
+        onMapReady={() => {
+          mapRef.current?.animateToRegion(
+            {
+              latitude: lat,
+              longitude: lon,
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005,
+            },
+            0,
+          );
+        }}
         mapType="standard"
         showsCompass={false}
         showsScale={false}
         toolbarEnabled={false}
       >
-        <Marker
-          coordinate={{ latitude: lat, longitude: lon }}
-          tracksViewChanges={false}
-        >
-          <PulsingMarker />
-        </Marker>
+        {Platform.OS === "ios" ? (
+          <Marker
+            coordinate={{ latitude: lat, longitude: lon }}
+            tracksViewChanges
+          >
+            <PulsingMarker />
+          </Marker>
+        ) : (
+          <Marker
+            coordinate={{ latitude: lat, longitude: lon }}
+            pinColor={Colors.primary}
+          />
+        )}
       </MapView>
 
       <LinearGradient

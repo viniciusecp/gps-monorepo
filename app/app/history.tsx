@@ -84,6 +84,7 @@ export default function History() {
 
 	const initialViewableIndices = useRef<Set<number> | null>(null);
 	const everSeenIndices = useRef<Set<number>>(new Set());
+	const mapRef = useRef<MapView>(null);
 
 	const fetchHistory = useCallback(async () => {
 		if (!imei) return;
@@ -424,6 +425,7 @@ export default function History() {
 
 					{showMap ? (
 						<MapView
+							ref={mapRef}
 							style={styles.map}
 							customMapStyle={darkMapStyle}
 							initialRegion={{
@@ -431,6 +433,20 @@ export default function History() {
 								longitude: coordinates[0].longitude,
 								latitudeDelta: 0.05,
 								longitudeDelta: 0.05,
+							}}
+							onMapReady={() => {
+								if (coordinates.length > 1) {
+									mapRef.current?.fitToCoordinates(
+										coordinates.map((c) => ({
+											latitude: c.latitude,
+											longitude: c.longitude,
+										})),
+										{
+											edgePadding: { top: 80, right: 80, bottom: 80, left: 80 },
+											animated: false,
+										},
+									);
+								}
 							}}
 						>
 							<Polyline

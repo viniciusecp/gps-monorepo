@@ -9,7 +9,7 @@ function BackButton() {
 
   return (
     <TouchableOpacity
-      onPress={() => router.back()}
+      onPress={() => router.replace("/")}
       style={styles.button}
     >
       <FontAwesome6 name="arrow-left" size={24} color={Colors.text} />

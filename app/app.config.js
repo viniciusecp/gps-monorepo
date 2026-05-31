@@ -25,6 +25,12 @@ module.exports = () => {
   if (buildProperties) {
     plugins.push([buildProperties, { android: { usesCleartextTraffic: true } }]);
   }
+  if (tryPlugin("expo-font")) {
+    plugins.push("expo-font");
+  }
+  if (tryPlugin("@react-native-community/datetimepicker")) {
+    plugins.push("@react-native-community/datetimepicker");
+  }
 
   return {
     expo: {
@@ -63,7 +69,6 @@ module.exports = () => {
       plugins,
       experiments: {
         typedRoutes: true,
-        reactCompiler: true,
       },
       extra: {
         router: {},

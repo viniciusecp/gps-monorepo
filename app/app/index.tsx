@@ -25,6 +25,8 @@ export default function Index() {
     if (storageUsers) {
       const parsed: User[] = JSON.parse(storageUsers);
 
+      setUsers(parsed);
+
       const refreshed = await Promise.all(
         parsed.map(async (user) => {
           try {

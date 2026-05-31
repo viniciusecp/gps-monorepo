@@ -115,11 +115,12 @@ export default function AddAccount() {
               onChangeText={setEmail}
               value={email}
               placeholder="Email"
-              keyboardType="email-address"
+              keyboardType={Platform.OS === "ios" ? "email-address" : undefined}
               autoCapitalize="none"
-              autoComplete="email"
               autoCorrect={false}
               placeholderTextColor={Colors.textTertiary}
+              cursorColor={Colors.primary}
+              selectionColor={Colors.primaryLight}
               style={styles.input}
             />
 
@@ -129,6 +130,8 @@ export default function AddAccount() {
               placeholder="Senha"
               secureTextEntry
               placeholderTextColor={Colors.textTertiary}
+              cursorColor={Colors.primary}
+              selectionColor={Colors.primaryLight}
               style={styles.input}
             />
 
