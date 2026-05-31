@@ -6,8 +6,10 @@
       "android": {
         "buildType": "apk"
       },
+      "pnpm": "10.33.2",
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://104.131.62.10:3333"
+        "EXPO_PUBLIC_API_URL": "http://104.131.62.10:3333",
+        "EAS_PROJECT_ID": "7251c36b-7cd4-4845-9958-1683d7a29871"
       }
     },
     "production": {}

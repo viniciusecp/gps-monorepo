@@ -1,6 +1,31 @@
-require("dotenv").config();
+try {
+  require("dotenv").config();
+} catch {}
+
+function tryPlugin(name) {
+  try {
+    require.resolve(name);
+    return name;
+  } catch {
+    return null;
+  }
+}
 
 module.exports = () => {
+  const splashScreen = tryPlugin("expo-splash-screen");
+  const buildProperties = tryPlugin("expo-build-properties");
+
+  const plugins = [];
+  if (tryPlugin("expo-router")) {
+    plugins.push("expo-router");
+  }
+  if (splashScreen) {
+    plugins.push([splashScreen, { image: "./assets/images/icon.png", imageWidth: 200, resizeMode: "contain", backgroundColor: "#000000", dark: { backgroundColor: "#000000" } }]);
+  }
+  if (buildProperties) {
+    plugins.push([buildProperties, { android: { usesCleartextTraffic: true } }]);
+  }
+
   return {
     expo: {
       name: "RastroApp",
@@ -35,29 +60,7 @@ module.exports = () => {
         output: "static",
         favicon: "./assets/images/icon.png",
       },
-      plugins: [
-        "expo-router",
-        [
-          "expo-splash-screen",
-          {
-            image: "./assets/images/icon.png",
-            imageWidth: 200,
-            resizeMode: "contain",
-            backgroundColor: "#000000",
-            dark: {
-              backgroundColor: "#000000",
-            },
-          },
-        ],
-        [
-          "expo-build-properties",
-          {
-            android: {
-              usesCleartextTraffic: true,
-            },
-          },
-        ],
-      ],
+      plugins,
       experiments: {
         typedRoutes: true,
         reactCompiler: true,

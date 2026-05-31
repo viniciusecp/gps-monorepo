@@ -144,7 +144,7 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
         />
       </Animated.View>
 
-      <View style={styles.optionsContainer}>
+      <View style={styles.optionsContainer} pointerEvents={isOpen ? "auto" : "none"}>
         {options.map((option, i) => (
           <Animated.View
             key={option.label}
@@ -158,7 +158,13 @@ function FABDropdownMenu({ options }: FABDropdownMenuProps) {
             <TouchableOpacity
               style={styles.optionButton}
               onPress={() => {
-                closeMenu();
+                overlayOpacity.setValue(0);
+                iconRotation.setValue(0);
+                options.forEach((_, i) => {
+                  optionAnims[i].translateY.setValue(80);
+                  optionAnims[i].opacity.setValue(0);
+                });
+                setIsOpen(false);
                 option.onPress();
               }}
               activeOpacity={0.7}
